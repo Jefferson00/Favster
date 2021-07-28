@@ -1,20 +1,20 @@
-import format from 'date-fns/format';
-import ptBR from 'date-fns/locale/pt-BR'
+import { useAuth } from '../../contexts/AuthContext';
 import styles from './styles.module.scss';
 
-export function Header(){
-    
-    const currentDate = format(new Date(), 'EEEEEE, d MMMM', {
-        locale:ptBR,
-    });
+export function Header() {
+    const { user, signOut } = useAuth();
 
-    return(
+    return (
         <header className={styles.headerContainer}>
-            <img src="/logo.svg" alt="Podcastr"/>
+            <img src="/logo.svg" alt="Musifavs" />
 
             <p>O melhor para você ouvir, sempre</p>
 
-            <span>{currentDate}</span>
+            {user &&
+                <button onClick={signOut}>
+                    <img src="/sign.svg" alt="Sair" />
+                </button>
+            }
         </header>
     )
 }

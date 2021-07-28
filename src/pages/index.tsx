@@ -1,141 +1,171 @@
-import {GetStaticProps} from 'next';
+import { GetServerSideProps } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import Head from 'next/head';
+import { Header } from '../components/Header';
+import { Player } from '../components/Player';
+
 
 import api from '../services/api';
-
-import {format, parseISO} from 'date-fns';
-import ptBR from 'date-fns/locale/pt-BR'
-import { convertDurationToTimeString } from '../utils/convertDurationToTimeString';
+import { auth } from '../services/firebase';
 
 import styles from './home.module.scss';
 import { usePlayer } from '../contexts/PlayerContext';
+import { useEffect, useState } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { parseCookies } from 'nookies';
 
-type Episode = {
-  id:string;
-  title:string;
-  members:string;
-  thumbnail:string;
-  description:string;
-  duration:number;
-  durationAsString: string;
-  url:string;
-  publishedAt:string;
+type Artists = {
+  id: string;
+  name: string;
+  image: string | null;
+  link: string;
+};
+type Albums = Object;
+
+type Genders = {
+
 }
 
 type HomeProps = {
-  latestEpisodes: Episode[],
-  allEpisodes: Episode[]
+  artists: Artists[],
+  albums: Albums[],
+  genders: Genders[],
 }
 
 //TODO responsividade, PWA, dark theme, Eletron
 
-export default function Home({latestEpisodes, allEpisodes} : HomeProps) {
+export default function Home({ }: HomeProps) {
+  const { user } = useAuth();
+  const { playList } = usePlayer();
+  const [searchContent, setSearchContent] = useState('');
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [artists, setArtists] = useState<Artists[]>([]);
+  const API_KEY = process.env.NEXT_PUBLIC_NAPSTER_API_KEY;
 
-  const {playList} = usePlayer()
+  async function searchThings() {
+    if (API_KEY && searchContent && searchContent.trim().length > 0) {
+      const result = await api.get(`search?apikey=${API_KEY}&query=${searchContent}&per_type_limit=10`);
 
-  const episodeList = [...latestEpisodes, ...allEpisodes];
+      const artistsArray: [] = result.data.search.data.artists;
+      let art: Artists[] = [];
+
+      const mapPromises = artistsArray.map(async (artist: any) => {
+        let { data } = await api.get(`${artist.links.images.href}?apikey=${API_KEY}`);
+        let imageURL = null;
+        if (data.images.length > 0) {
+          imageURL = data.images[0].url
+        }
+
+        art.push({
+          id: artist.id,
+          image: imageURL,
+          link: artist.href,
+          name: artist.name,
+        });
+      });
+
+      await Promise.all(mapPromises);
+
+      setArtists(art);
+
+      console.log(result.data.search.data);
+    } else {
+      setArtists([]);
+    }
+  }
+
+  useEffect(() => {
+    setSearchLoading(true);
+
+    const timer = setTimeout(() => {
+      searchThings().finally(() => setSearchLoading(false));
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [searchContent]);
 
   return (
-      <div className={styles.homepage}>
+    <div className={styles.wrapper}>
+      <main>
+        <Header />
+        <div className={styles.homepage}>
           <Head>
-              <title>Home | Podcastr</title>
+            <title>Home | Musifavs</title>
           </Head>
-          <section className={styles.latestEpisodes}>
-            <h2>Últimos lançamentos</h2>
 
-            <ul>
-                {latestEpisodes.map((episode, index) => (
-                    <li key={episode.id}>
-                        <Image 
-                            height={192}
-                            width={192}
-                            src={episode.thumbnail} 
-                            alt={episode.title}
-                            objectFit="cover"
-                        />
+          <section className={styles.main}>
+            <header>
+              <div className={styles.inputContainer}>
+                <img src="search.svg" alt="procurar" />
+                <input
+                  type="text"
+                  value={searchContent}
+                  onChange={(e) => setSearchContent(e.target.value)}
+                  name="search"
+                  id="search"
+                  placeholder="Procure por artista, música, album..."
+                />
+              </div>
 
-                        <div className={styles.episodeDetails}>
-                          <Link href={`/episodes/${episode.id}`}>
-                            <a>{episode.title}</a>
-                          </Link>
-                            <p>{episode.members}</p>
-                            <span>{episode.publishedAt}</span>
-                            <span>{episode.durationAsString}</span>
-                        </div>
+              <button>
+                Minha biblioteca
+              </button>
+            </header>
 
-                        <button type="button" onClick={() => playList(episodeList, index)}>
-                          <img src="/play-green.svg" alt="Tocar"/>
-                        </button>
-                    </li>
-                ))}
-            </ul>
+            <main>
+              {searchLoading ?
+                <p>Carregando...</p>
+                :
+                artists.length > 0 ?
+                  <div className={styles.resultContainer}>
+                    <h3>Artistas</h3>
+                    <div className={styles.list}>
+                      {artists.map(artist => {
+                        return (
+                          <div key={artist.id} className={styles.listItem}>
+                            {artist.image ?
+                              <img src={artist.image} alt={artist.name} />
+                              :
+                              <img src="default.png" alt={artist.name} />
+                            }
+                            <p>{artist.name}</p>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+                  :
+                  <>
+                    <h3>Encontre seus artistas, álbuns e genêros preferidos </h3>
+                    <img src="illustration-home.svg" alt="home" />
+                  </>
+              }
+            </main>
+
           </section>
-
-          <section className={styles.allEpisodes}>
-                <h2></h2>
-
-                <table cellSpacing={0}>
-                    <thead>
-                        <tr>
-                        <th></th>
-                        <th>Podcast</th>
-                        <th>Integrantes</th>
-                        <th>Data</th>
-                        <th>Duração</th>
-                        <th></th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {allEpisodes.map((episode, index) => {
-                            return(
-                              <tr key={episode.id}>
-                                  <td style={{width: 72}}>
-                                  <Image 
-                                      height={120}
-                                      width={120}
-                                      src={episode.thumbnail} 
-                                      alt={episode.title}
-                                      objectFit="cover"
-                                  />
-                                  </td>
-                                  <td>
-                                  <Link href={`/episodes/${episode.id}`}>
-                                    <a>{episode.title}</a>
-                                  </Link>
-                                  </td>
-                                  <td>{episode.members}</td>
-                                  <td style={{width: 100}}>{episode.publishedAt}</td>
-                                  <td>{episode.durationAsString}</td>
-                                  <td>
-                                      <button type="button"
-                                        onClick={() => playList(episodeList, index + latestEpisodes.length)}
-                                      >
-                                        <img src="/play-green.svg" alt="Tocar"/>
-                                      </button>
-                                  </td>
-                              </tr>
-                            )
-                        })}
-                    </tbody>
-                </table>
-          </section>
-      </div>
+        </div>
+      </main>
+      <Player />
+    </div>
   )
 }
 
-export const getStaticProps : GetStaticProps = async () => {
-  const {data} = await api.get('episodes', {
-    params:{
-      _limit:12,
-      _sort:'published_at',
-      _order:'desc',
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { ['@Musifavs:token']: token } = parseCookies(context);
+
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      }
     }
-  })
-  
-  const episodes = data.map(episode =>{
+  }
+
+  const { data } = await api.get('artists/Art.28463069/similar?apikey=YTkxZTRhNzAtODdlNy00ZjMzLTg0MWItOTc0NmZmNjU4Yzk4')
+
+  /*const episodes = data.map(episode =>{
     return {
       id: episode.id,
       title: episode.title,
@@ -149,16 +179,12 @@ export const getStaticProps : GetStaticProps = async () => {
       description: episode.description,
       url: episode.file.url,
     }
-  })
+  })*/
 
-  const latestEpisodes = episodes.slice(0, 2);
-  const allEpisodes = episodes.slice(2, episodes.length)
 
-  return{
-    props:{
-      latestEpisodes,
-      allEpisodes
+  return {
+    props: {
+      artists: data
     },
-    revalidate:60* 60 * 8,
   }
 }

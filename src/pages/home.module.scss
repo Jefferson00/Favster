@@ -1,5 +1,14 @@
+.wrapper{
+  display: flex;
+
+  main{
+      flex: 1;
+      overflow: hidden;
+  }
+}
+
 .homepage{
-    padding: 0 4rem;
+    padding: 1.563rem 4rem;
     height: calc(100vh - 6.5rem);
     overflow-y: scroll;
 
@@ -7,6 +16,85 @@
         margin-top: 3rem;
         margin-bottom: 1.5rem;
       }
+}
+
+.main{
+  header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+
+    .inputContainer{
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      flex: 1;
+
+
+      input{
+        border: none;
+        background: transparent;
+        height: 1.5rem;
+        width: 100%;
+        outline: none;
+        padding: 0 1rem;
+        color: var(--gray-800);
+        font-size: 1.125rem;
+      }
+    }
+
+    button{
+      border: none;
+      background: transparent;
+      color: var(--orange-400);
+      font-size: 1.5rem;
+      font-weight: 600;
+    }
+  }
+
+  main{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 6.5rem;
+
+    > img{
+      height: 22rem;
+      margin-top: 3.5rem;
+    }
+
+    .resultContainer{
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      width: 100%;
+    }
+
+    .list{
+      display: flex;
+      gap: 2.5rem;
+      margin-top: 1.188rem;
+
+      .listItem{
+        width: 8.625rem;
+        text-align: center;
+
+        img{
+          width: 8.625rem;
+          height: 8.625rem;
+          object-fit: cover;
+          border-radius: 10px;
+        }
+
+        p{
+          margin-top: 1.188rem;
+        }
+      }
+    }
+
+  }
 }
 
 .latestEpisodes {
