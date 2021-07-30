@@ -3,13 +3,15 @@
 
   main{
       flex: 1;
-      overflow: hidden;
+      width: calc(100vw - 26.5rem);
+      scroll-behavior: smooth;
   }
 }
 
 .homepage{
     padding: 1.563rem 4rem;
     height: calc(100vh - 6.5rem);
+    width: 100%;
     overflow-y: scroll;
 
     h2 {
@@ -58,40 +60,12 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 6.5rem;
+    margin-top: 1.25rem;
+    width: 100%;
 
     > img{
       height: 22rem;
       margin-top: 3.5rem;
-    }
-
-    .resultContainer{
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      width: 100%;
-    }
-
-    .list{
-      display: flex;
-      gap: 2.5rem;
-      margin-top: 1.188rem;
-
-      .listItem{
-        width: 8.625rem;
-        text-align: center;
-
-        img{
-          width: 8.625rem;
-          height: 8.625rem;
-          object-fit: cover;
-          border-radius: 10px;
-        }
-
-        p{
-          margin-top: 1.188rem;
-        }
-      }
     }
 
   }

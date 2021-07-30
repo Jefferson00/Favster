@@ -7,69 +7,87 @@ import { Player } from '../components/Player';
 
 
 import api from '../services/api';
-import { auth } from '../services/firebase';
 
 import styles from './home.module.scss';
 import { usePlayer } from '../contexts/PlayerContext';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { parseCookies } from 'nookies';
+import { Slider } from '../components/Slider';
 
-type Artists = {
+type Data = {
   id: string;
   name: string;
   image: string | null;
   link: string;
+  type: string;
+  subtitle?: string;
 };
-type Albums = Object;
-
-type Genders = {
-
-}
-
-type HomeProps = {
-  artists: Artists[],
-  albums: Albums[],
-  genders: Genders[],
-}
 
 //TODO responsividade, PWA, dark theme, Eletron
 
-export default function Home({ }: HomeProps) {
+export default function Home() {
   const { user } = useAuth();
   const { playList } = usePlayer();
+
   const [searchContent, setSearchContent] = useState('');
   const [searchLoading, setSearchLoading] = useState(false);
-  const [artists, setArtists] = useState<Artists[]>([]);
+  const [artists, setArtists] = useState<Data[]>([]);
+  const [albums, setAlbums] = useState<Data[]>([]);
+
   const API_KEY = process.env.NEXT_PUBLIC_NAPSTER_API_KEY;
 
   async function searchThings() {
     if (API_KEY && searchContent && searchContent.trim().length > 0) {
-      const result = await api.get(`search?apikey=${API_KEY}&query=${searchContent}&per_type_limit=10`);
+      try {
+        const result = await api.get(`search?apikey=${API_KEY}&query=${searchContent}&per_type_limit=10`);
 
-      const artistsArray: [] = result.data.search.data.artists;
-      let art: Artists[] = [];
+        console.log(result.data.search.data)
+        const artistsArray: [] = result.data.search.data.artists;
+        const albumsArray: [] = result.data.search.data.albums;
+        let art: Data[] = [];
+        let abm: Data[] = [];
 
-      const mapPromises = artistsArray.map(async (artist: any) => {
-        let { data } = await api.get(`${artist.links.images.href}?apikey=${API_KEY}`);
-        let imageURL = null;
-        if (data.images.length > 0) {
-          imageURL = data.images[0].url
-        }
+        const artistMapPromises = artistsArray.map(async (artist: any) => {
+          let { data } = await api.get(`${artist.links.images.href}?apikey=${API_KEY}`);
+          let imageURL = null;
+          if (data.images.length > 0) {
+            imageURL = data.images[0].url
+          }
 
-        art.push({
-          id: artist.id,
-          image: imageURL,
-          link: artist.href,
-          name: artist.name,
+          art.push({
+            id: artist.id,
+            image: imageURL,
+            link: artist.href,
+            name: artist.name,
+            type: artist.type,
+          });
         });
-      });
 
-      await Promise.all(mapPromises);
+        const albumsMapPromises = albumsArray.map(async (album: any) => {
+          let { data } = await api.get(`${album.links.images.href}?apikey=${API_KEY}`);
+          let imageUrl = null;
+          if (data.images.length > 0) {
+            imageUrl = data.images[0].url
+          }
 
-      setArtists(art);
+          abm.push({
+            id: album.id,
+            image: imageUrl,
+            link: album.href,
+            name: album.name,
+            type: album.type,
+            subtitle: album.artistName,
+          });
+        })
 
-      console.log(result.data.search.data);
+        await Promise.all(artistMapPromises);
+        setArtists(art);
+        await Promise.all(albumsMapPromises);
+        setAlbums(abm);
+      } catch (error) {
+        alert('Não foi possível retornar o resultado da pesquisa, tente novamente.')
+      }
     } else {
       setArtists([]);
     }
@@ -79,9 +97,10 @@ export default function Home({ }: HomeProps) {
     setSearchLoading(true);
 
     const timer = setTimeout(() => {
-      searchThings().finally(() => setSearchLoading(false));
-    }, 2000);
-
+      searchThings().finally(() => {
+        setSearchLoading(false)
+      });
+    }, 1000);
     return () => clearTimeout(timer);
   }, [searchContent]);
 
@@ -117,28 +136,25 @@ export default function Home({ }: HomeProps) {
               {searchLoading ?
                 <p>Carregando...</p>
                 :
-                artists.length > 0 ?
-                  <div className={styles.resultContainer}>
-                    <h3>Artistas</h3>
-                    <div className={styles.list}>
-                      {artists.map(artist => {
-                        return (
-                          <div key={artist.id} className={styles.listItem}>
-                            {artist.image ?
-                              <img src={artist.image} alt={artist.name} />
-                              :
-                              <img src="default.png" alt={artist.name} />
-                            }
-                            <p>{artist.name}</p>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                  :
+                (artists.length === 0 && albums.length === 0) ?
                   <>
                     <h3>Encontre seus artistas, álbuns e genêros preferidos </h3>
                     <img src="illustration-home.svg" alt="home" />
+                  </>
+                  :
+                  <>
+                    {artists.length > 0 && (
+                      <Slider
+                        data={artists}
+                        loadingIndicator={searchLoading}
+                      />
+                    )}
+                    {albums.length > 0 && (
+                      <Slider
+                        data={albums}
+                        loadingIndicator={searchLoading}
+                      />
+                    )}
                   </>
               }
             </main>
@@ -163,28 +179,9 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   }
 
-  const { data } = await api.get('artists/Art.28463069/similar?apikey=YTkxZTRhNzAtODdlNy00ZjMzLTg0MWItOTc0NmZmNjU4Yzk4')
-
-  /*const episodes = data.map(episode =>{
-    return {
-      id: episode.id,
-      title: episode.title,
-      thumbnail: episode.thumbnail,
-      members: episode.members,
-      publishedAt: format(parseISO(episode.published_at), 'd MMM yy', { 
-        locale: ptBR
-      }),
-      duration: Number(episode.file.duration),
-      durationAsString: convertDurationToTimeString(Number(episode.file.duration)),
-      description: episode.description,
-      url: episode.file.url,
-    }
-  })*/
-
-
   return {
     props: {
-      artists: data
+
     },
   }
 }
