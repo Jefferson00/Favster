@@ -55,7 +55,7 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
     }, [data, loadingIndicator]);
 
     return (
-        <div className={styles.resultContainer}>
+        <div className={styles.sliderContainer}>
             <h3>{translateType(data[0].type)}</h3>
             {!isResultsSmallerThanList &&
                 <a href={`#${prevItem}-${data[0].type}`} className={styles.arrowButton} onClick={handlePrevItem}>

@@ -1,9 +1,10 @@
-.resultContainer{
+.sliderContainer{
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     width: 100%;
     position: relative;
+    margin-top: 1.56rem;
 
     .arrowButton{
       position: absolute;
