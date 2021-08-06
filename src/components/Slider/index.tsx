@@ -1,5 +1,6 @@
 
 import { useEffect, useRef, useState } from 'react';
+import { translateType } from '../../utils/translateType';
 import styles from './styles.module.scss';
 
 interface DataProps {
@@ -55,7 +56,7 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
 
     return (
         <div className={styles.resultContainer}>
-            <h3>{data[0].type}</h3>
+            <h3>{translateType(data[0].type)}</h3>
             {!isResultsSmallerThanList &&
                 <a href={`#${prevItem}-${data[0].type}`} className={styles.arrowButton} onClick={handlePrevItem}>
                     ‹
