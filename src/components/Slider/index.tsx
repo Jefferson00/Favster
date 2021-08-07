@@ -1,5 +1,6 @@
 
 import { useEffect, useRef, useState } from 'react';
+import { usePlayer } from '../../contexts/PlayerContext';
 import { translateType } from '../../utils/translateType';
 import styles from './styles.module.scss';
 
@@ -10,7 +11,21 @@ interface DataProps {
     name: string;
     type: string;
     subtitle?: string;
+    previewURL?: string;
+    duration?: number;
+    albumName?: string;
+    artistName?: string;
 }
+
+type Track = {
+    id: string;
+    title: string;
+    artistName: string;
+    albumName: string;
+    image: string;
+    duration: number;
+    url: string;
+};
 
 interface SliderProps {
     data: DataProps[],
@@ -18,6 +33,8 @@ interface SliderProps {
 }
 
 export function Slider({ data, loadingIndicator }: SliderProps) {
+    const { playList } = usePlayer();
+
     const listRef = useRef<HTMLDivElement>(null);
     const itemRef = useRef<HTMLDivElement>(null);
 
@@ -25,6 +42,8 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
     const [prevItem, setPrevItem] = useState(0);
 
     const [isResultsSmallerThanList, setIsResultsSmallerThanList] = useState(true);
+
+    const [trackList, setTrackList] = useState<Track[]>([]);
 
     const API_KEY = process.env.NEXT_PUBLIC_NAPSTER_API_KEY;
 
@@ -52,6 +71,37 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
                 setIsResultsSmallerThanList(false);
             }
         }
+
+        if (data[0].type === "track") {
+            let trackArray: Track[] = [];
+            data.map((item, index) => {
+                trackArray[index] = {
+                    albumName: item.albumName,
+                    artistName: item.artistName,
+                    duration: item.duration,
+                    id: item.id,
+                    image: item.image,
+                    title: item.name,
+                    url: item.previewURL,
+                }
+            });
+
+            setTrackList(trackArray);
+
+            /*data.map(item => {
+                setTrackList([...trackList, {
+                    albumName: item.albumName,
+                    artistName: item.artistName,
+                    duration: item.duration,
+                    id: item.id,
+                    image: item.image,
+                    title: item.name,
+                    url: item.previewURL,
+                }]);
+                console.log(trackList)
+            });*/
+        }
+
     }, [data, loadingIndicator]);
 
     return (
@@ -79,6 +129,11 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
                                 <img src="default.png" alt={item.name} />
                             }
                             <p>{item.name}</p>
+                            {item.type === 'track' &&
+                                <button onClick={() => playList(trackList, index)}>
+                                    play
+                                </button>
+                            }
                         </div>
                     )
                 })}

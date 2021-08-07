@@ -23,6 +23,10 @@ type Data = {
   link: string;
   type: string;
   subtitle?: string;
+  previewURL?: string;
+  duration?: number;
+  albumName?: string;
+  artistName?: string;
 };
 
 //TODO responsividade, PWA, dark theme, Eletron
@@ -39,7 +43,7 @@ export default function Home() {
 
   const API_KEY = process.env.NEXT_PUBLIC_NAPSTER_API_KEY;
 
-  async function searchThings() {
+  async function searchAll() {
     if (API_KEY && searchContent && searchContent.trim().length > 0) {
       try {
         const result = await api.get(`search?apikey=${API_KEY}&query=${searchContent}&per_type_limit=10`);
@@ -137,6 +141,10 @@ export default function Home() {
           link: track.href,
           name: track.name,
           type: track.type,
+          previewURL: track.previewURL,
+          albumName: track.albumName,
+          artistName: track.artistName,
+          duration: track.playbackSeconds,
         });
 
       });
@@ -151,7 +159,7 @@ export default function Home() {
     setSearchLoading(true);
 
     const timer = setTimeout(() => {
-      searchThings().finally(() => {
+      searchAll().finally(() => {
         setSearchLoading(false)
       });
     }, 1000);

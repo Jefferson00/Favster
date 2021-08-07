@@ -11,6 +11,7 @@ import { convertDurationToTimeString } from '../../utils/convertDurationToTimeSt
 export function Player() {
     const audioRef = useRef<HTMLAudioElement>(null)
     const [progress, setProgress] = useState(0);
+    const [loading, setLoading] = useState(false);
 
     const {
         episodeList,
@@ -32,19 +33,23 @@ export function Player() {
     const episode = episodeList[currentEpisodeIndex];
 
     useEffect(() => {
+        console.log(episode)
         if (!audioRef.current) {
             return;
         }
 
         if (isPlaying) {
             audioRef.current.play();
+            //setLoading(true);
         } else {
             audioRef.current.pause();
+            //setLoading(false);
         }
 
     }, [isPlaying])
 
     function setupProgressListener() {
+        setLoading(false);
         audioRef.current.currentTime = 0;
 
         audioRef.current.addEventListener('timeupdate', () => {
@@ -70,19 +75,19 @@ export function Player() {
         <div className={styles.playerContainer}>
             <header>
                 <img src="/playing.svg" alt="Tocando agora" />
-                <strong>Tocando agora</strong>
+                <strong>{loading ? "Carregando..." : "Tocando agora"}</strong>
             </header>
 
             {episode ? (
                 <div className={styles.currentEpisode}>
                     <Image
-                        src={episode.thumbnail}
+                        src={episode.image}
                         width={592}
                         height={592}
                         objectFit='cover'
                     />
                     <strong>{episode.title}</strong>
-                    <span>{episode.members}</span>
+                    <span>{episode.artistName}</span>
                 </div>
             ) : (
                 <div className={styles.emptyPlayer}>
