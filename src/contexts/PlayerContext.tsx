@@ -11,8 +11,8 @@ type Track = {
 };
 
 type PlayerContextData = {
-    episodeList: Track[];
-    currentEpisodeIndex: number;
+    trackList: Track[];
+    currentTrackIndex: number;
     isPlaying: boolean;
     hasPrevious: boolean;
     hasNext: boolean;
@@ -36,21 +36,21 @@ type PlayerContextProviderProps = {
 export const PlayerContext = createContext({} as PlayerContextData);
 
 export function PlayerContextProvider({ children }: PlayerContextProviderProps) {
-    const [episodeList, setEpisodeList] = useState([])
-    const [currentEpisodeIndex, setCurrentEpisodeIndex] = useState(0)
+    const [trackList, setTrackList] = useState([])
+    const [currentTrackIndex, setCurrentTrackIndex] = useState(0)
     const [isPlaying, setIsPlaying] = useState(false)
     const [isLooping, setIsLooping] = useState(false)
     const [isShuffling, setIsShuffling] = useState(false)
 
     function play(episode: Track) {
-        setEpisodeList([episode])
-        setCurrentEpisodeIndex(0)
+        setTrackList([episode])
+        setCurrentTrackIndex(0)
         setIsPlaying(true)
     }
 
     function playList(list: Track[], index: number) {
-        setEpisodeList(list);
-        setCurrentEpisodeIndex(index);
+        setTrackList(list);
+        setCurrentTrackIndex(index);
         setIsPlaying(true);
     }
 
@@ -70,37 +70,37 @@ export function PlayerContextProvider({ children }: PlayerContextProviderProps) 
         setIsPlaying(state)
     }
 
-    const hasPrevious = currentEpisodeIndex > 0;
-    const hasNext = isShuffling || (currentEpisodeIndex + 1) < episodeList.length;
+    const hasPrevious = currentTrackIndex > 0;
+    const hasNext = isShuffling || (currentTrackIndex + 1) < trackList.length;
 
     function playNext() {
         if (isShuffling) {
-            const nextRandomEpisodeIndex = Math.floor(Math.random() * episodeList.length);
+            const nextRandomTrackIndex = Math.floor(Math.random() * trackList.length);
 
-            setCurrentEpisodeIndex(nextRandomEpisodeIndex)
+            setCurrentTrackIndex(nextRandomTrackIndex)
         } else if (hasNext) {
-            setCurrentEpisodeIndex(currentEpisodeIndex + 1)
+            setCurrentTrackIndex(currentTrackIndex + 1)
         }
     }
 
     function playPrevious() {
         if (hasPrevious) {
-            setCurrentEpisodeIndex(currentEpisodeIndex - 1);
+            setCurrentTrackIndex(currentTrackIndex - 1);
         }
     }
 
     function clearPlayerState() {
-        setEpisodeList([])
-        setCurrentEpisodeIndex(0)
+        setTrackList([])
+        setCurrentTrackIndex(0)
         setIsPlaying(false)
     }
 
     return (
         <PlayerContext.Provider
             value={{
-                episodeList,
+                trackList,
                 isPlaying,
-                currentEpisodeIndex,
+                currentTrackIndex,
                 hasPrevious,
                 hasNext,
                 isLooping,

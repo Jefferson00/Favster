@@ -1,5 +1,5 @@
-
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import { usePlayer } from '../../contexts/PlayerContext';
 import { translateType } from '../../utils/translateType';
 import styles from './styles.module.scss';
@@ -87,19 +87,6 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
             });
 
             setTrackList(trackArray);
-
-            /*data.map(item => {
-                setTrackList([...trackList, {
-                    albumName: item.albumName,
-                    artistName: item.artistName,
-                    duration: item.duration,
-                    id: item.id,
-                    image: item.image,
-                    title: item.name,
-                    url: item.previewURL,
-                }]);
-                console.log(trackList)
-            });*/
         }
 
     }, [data, loadingIndicator]);
@@ -107,11 +94,13 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
     return (
         <div className={styles.sliderContainer}>
             <h3>{translateType(data[0].type)}</h3>
+
             {!isResultsSmallerThanList &&
                 <a href={`#${prevItem}-${data[0].type}`} className={styles.arrowButton} onClick={handlePrevItem}>
-                    ‹
+                    ‹ {/*Change for SVG Icon*/}
                 </a>
             }
+
             <div className={styles.list} ref={listRef}>
                 {data.map((item, index) => {
                     return (
@@ -121,16 +110,27 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
                             id={index.toString() + "-" + item.type}
                             ref={itemRef}
                         >
-                            {item.image ?
-                                <a href={`${item.link}?apikey=${API_KEY}`}>
+                            {item.type === 'track' ?
+                                item.image ?
                                     <img src={item.image} alt={item.name} />
-                                </a>
+                                    :
+                                    <img src="default.png" alt={item.name} />
                                 :
-                                <img src="default.png" alt={item.name} />
+                                item.image ?
+                                    <Link href={`/artists/${item.id}`}>
+                                        <a><img src={item.image} alt={item.name} /></a>
+                                    </Link>
+                                    :
+                                    <a href={`${item.link}?apikey=${API_KEY}`}>
+                                        <img src="default.png" alt={item.name} />
+                                    </a>
                             }
+
                             <p>{item.name}</p>
+
                             {item.subtitle && <span>{item.subtitle}</span>}
                             {item.artistName && <span>{item.artistName}</span>}
+
                             {item.type === 'track' &&
                                 <button className={styles.playButton} onClick={() => playList(trackList, index)}>
                                     <img src="/play-green.svg" alt="Tocar" />

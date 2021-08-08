@@ -14,8 +14,8 @@ export function Player() {
     const [loading, setLoading] = useState(false);
 
     const {
-        episodeList,
-        currentEpisodeIndex,
+        trackList,
+        currentTrackIndex,
         isPlaying,
         hasNext,
         hasPrevious,
@@ -30,7 +30,7 @@ export function Player() {
         clearPlayerState,
     } = usePlayer();
 
-    const episode = episodeList[currentEpisodeIndex];
+    const episode = trackList[currentTrackIndex];
 
     useEffect(() => {
         console.log(episode)
@@ -145,7 +145,7 @@ export function Player() {
                 <div className={styles.buttons}>
                     <button
                         type="button"
-                        disabled={!episode || episodeList.length === 1}
+                        disabled={!episode || trackList.length === 1}
                         onClick={toggleShuffle}
                         className={isShuffling ? styles.isActive : ''}
                     >

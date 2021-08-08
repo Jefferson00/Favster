@@ -1,12 +1,38 @@
+.wrapper{
+  display: flex;
+
+  main{
+      flex: 1;
+      width: calc(100vw - 26.5rem);
+      scroll-behavior: smooth;
+  }
+}
+
 .container{
   overflow-y: scroll;
   height: calc(100vh - 6.5rem);
+  position: relative;
+
+  .topBackgroundImage{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 14rem;
+    width: 100%;
+    background: #41414D;
+
+    img{
+      height: inherit;
+      width: inherit;
+      object-fit: cover;
+      opacity: 0.6;
+    }
+  }
 }
-.episode {
-    max-width: 45rem;
-    padding: 3rem 2rem;
+.artist {
+    max-width: 53rem;
+    padding: 3rem 0;
     margin: 0 auto;
-    
   
     .thumbnailContainer {
       position: relative;
@@ -85,6 +111,27 @@
   
       p {
         margin: 1.5rem 0;
+      }
+    }
+
+    .albumsContainer{
+      margin-top: 2.3rem;
+
+      .albumsList{
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-top: 1.188rem;
+
+        .album{
+          width: 8.625rem;
+          text-align: center;
+
+          img{
+            width: inherit;
+          }
+        }
       }
     }
   }
