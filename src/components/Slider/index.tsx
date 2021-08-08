@@ -129,9 +129,11 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
                                 <img src="default.png" alt={item.name} />
                             }
                             <p>{item.name}</p>
+                            {item.subtitle && <span>{item.subtitle}</span>}
+                            {item.artistName && <span>{item.artistName}</span>}
                             {item.type === 'track' &&
-                                <button onClick={() => playList(trackList, index)}>
-                                    play
+                                <button className={styles.playButton} onClick={() => playList(trackList, index)}>
+                                    <img src="/play-green.svg" alt="Tocar" />
                                 </button>
                             }
                         </div>

@@ -73,6 +73,9 @@ export function Player() {
 
     return (
         <div className={styles.playerContainer}>
+            {episode &&
+                <img className={styles.playerBackgroundImg} src={episode.image} alt={episode.title} />
+            }
             <header>
                 <img src="/playing.svg" alt="Tocando agora" />
                 <strong>{loading ? "Carregando..." : "Tocando agora"}</strong>
