@@ -131,6 +131,7 @@
           width: 8.625rem;
           text-align: center;
           position: relative;
+          max-width: min-content;
 
           img{
             width: inherit;
@@ -139,6 +140,7 @@
 
         .track{
           text-align: center;
+          max-width: min-content;
           .imageContainer{
             width: 8.625rem;
             position: relative;
@@ -166,8 +168,28 @@
                 height: 2.25rem;
               }
             }
+          } 
+        }
+      }
+      footer{
+        margin-top: 1rem;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+
+        button{
+          background: transparent;
+          border: none;
+          transition: filter 0.4s;
+
+          img{
+            height: 2rem;
+            width: 2rem;
           }
-          
+
+          &:hover{
+            filter: brightness(0.9);
+          }
         }
       }
     }

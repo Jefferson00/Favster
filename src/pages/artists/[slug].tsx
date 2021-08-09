@@ -57,10 +57,34 @@ export default function Episode({ artist }: ArtistProps) {
     const { play, playList } = usePlayer();
 
     const [trackList, setTrackList] = useState<Track[]>([]);
+    const [albums, setAlbums] = useState<Album[]>([]);
+    const [tracks, setTracks] = useState<Track[]>([]);
+
+    const [showingAllAlbums, setShowingAllAlbums] = useState(false);
+    const [showingAllTracks, setShowingAllTracks] = useState(false);
+
+    function toggleShowAllAlbums() {
+        setShowingAllAlbums(!showingAllAlbums);
+    }
+
+    function toggleShowAllTracks() {
+        setShowingAllTracks(!showingAllTracks);
+    }
 
     useEffect(() => {
         setTrackList(artist.topTracks);
-    }, [artist]);
+
+        if (showingAllAlbums) {
+            setAlbums(artist.albums);
+        } else {
+            setAlbums(artist.albums.slice(0, 10));
+        }
+        if (showingAllTracks) {
+            setTracks(artist.topTracks);
+        } else {
+            setTracks(artist.topTracks.slice(0, 10));
+        }
+    }, [artist, showingAllAlbums, showingAllTracks]);
 
     return (
         <div className={styles.wrapper}>
@@ -98,7 +122,7 @@ export default function Episode({ artist }: ArtistProps) {
                             {
                                 artist.genres.map(genre => {
                                     return (
-                                        <span>{genre.name}</span>
+                                        <span key={genre.id}>{genre.name}</span>
                                     )
                                 })
                             }
@@ -112,7 +136,7 @@ export default function Episode({ artist }: ArtistProps) {
                         <div className={styles.albumsContainer}>
                             <h2>Albuns</h2>
                             <div className={styles.albumsList}>
-                                {artist.albums.map(album => {
+                                {albums.map(album => {
                                     return (
                                         <div className={styles.album} key={album.id}>
                                             {album.image ?
@@ -125,12 +149,20 @@ export default function Episode({ artist }: ArtistProps) {
                                     )
                                 })}
                             </div>
+                            <footer>
+                                <button onClick={toggleShowAllAlbums}>
+                                    {showingAllAlbums ?
+                                        <img src="/chevron-up.svg" alt="ocultar" /> :
+                                        <img src="/plus.svg" alt="ver mais" />
+                                    }
+                                </button>
+                            </footer>
                         </div>
 
                         <div className={styles.tracksContainer}>
                             <h2>Músicas</h2>
                             <div className={styles.tracksList}>
-                                {artist.topTracks.map((track, index) => {
+                                {tracks.map((track, index) => {
                                     return (
                                         <div className={styles.track} key={track.id}>
                                             <div className={styles.imageContainer}>
@@ -145,11 +177,18 @@ export default function Episode({ artist }: ArtistProps) {
                                             </div>
                                             <p>{track.title}</p>
                                             <p>{track.albumName}</p>
-
                                         </div>
                                     )
                                 })}
                             </div>
+                            <footer>
+                                <button onClick={toggleShowAllTracks}>
+                                    {showingAllTracks ?
+                                        <img src="/chevron-up.svg" alt="ocultar" /> :
+                                        <img src="/plus.svg" alt="ver mais" />
+                                    }
+                                </button>
+                            </footer>
                         </div>
                     </div>
                 </div>
