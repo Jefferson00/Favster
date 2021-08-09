@@ -10,7 +10,7 @@ import styles from './episode.module.scss';
 import { usePlayer } from "../../contexts/PlayerContext";
 import { Player } from "../../components/Player";
 import { Header } from "../../components/Header";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 type Album = {
     id: string;
@@ -22,7 +22,19 @@ type Album = {
 }
 
 type Genre = {
+    id: string;
+    name: string;
+    description: string;
+}
 
+type Track = {
+    id: string;
+    title: string;
+    artistName: string;
+    albumName: string;
+    image: string;
+    duration: number;
+    url: string;
 }
 
 type Artist = {
@@ -31,6 +43,8 @@ type Artist = {
     type: string;
     bio: string;
     albums: Album[];
+    genres: Genre[];
+    topTracks: Track[];
     image: string;
 }
 
@@ -40,11 +54,13 @@ type ArtistProps = {
 
 export default function Episode({ artist }: ArtistProps) {
 
-    const { play } = usePlayer();
+    const { play, playList } = usePlayer();
+
+    const [trackList, setTrackList] = useState<Track[]>([]);
 
     useEffect(() => {
-        console.log(artist)
-    }, [])
+        setTrackList(artist.topTracks);
+    }, [artist]);
 
     return (
         <div className={styles.wrapper}>
@@ -79,7 +95,13 @@ export default function Episode({ artist }: ArtistProps) {
 
                         <header>
                             <h1>{artist.name}</h1>
-
+                            {
+                                artist.genres.map(genre => {
+                                    return (
+                                        <span>{genre.name}</span>
+                                    )
+                                })
+                            }
                         </header>
 
                         <div
@@ -99,6 +121,31 @@ export default function Episode({ artist }: ArtistProps) {
                                                 <img src="default.png" alt={album.name} />
                                             }
                                             <p>{album.name}</p>
+                                        </div>
+                                    )
+                                })}
+                            </div>
+                        </div>
+
+                        <div className={styles.tracksContainer}>
+                            <h2>Músicas</h2>
+                            <div className={styles.tracksList}>
+                                {artist.topTracks.map((track, index) => {
+                                    return (
+                                        <div className={styles.track} key={track.id}>
+                                            <div className={styles.imageContainer}>
+                                                {track.image ?
+                                                    <img src={track.image} alt={track.title} />
+                                                    :
+                                                    <img src="default.png" alt={track.title} />
+                                                }
+                                                <button className={styles.playButton} onClick={() => playList(trackList, index)}>
+                                                    <img src="/play-green.svg" alt="Tocar" />
+                                                </button>
+                                            </div>
+                                            <p>{track.title}</p>
+                                            <p>{track.albumName}</p>
+
                                         </div>
                                     )
                                 })}
@@ -129,8 +176,42 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
     let images = await api.get(`${data.artists[0].links.images.href}?apikey=${API_KEY}`);
 
     let albums: Album[] = [];
+    let genres: Genre[] = [];
+    let topTracks: Track[] = [];
 
     let albumsAPIResponse = await api.get(`${data.artists[0].links.albums.href}/top?apikey=${API_KEY}`);
+    let genresAPIResponse = await api.get(`${data.artists[0].links.genres.href}?apikey=${API_KEY}`);
+    let topTracksAPIResponse = await api.get(`/artists/${slug}/tracks/top?apikey=${API_KEY}`);
+
+
+
+    const topTracksMapPromises = topTracksAPIResponse.data.tracks.map(async (track: any) => {
+        let albumsResponse = await api.get(`${track.links.albums.href}?apikey=${API_KEY}`);
+        let albumImagesLink = albumsResponse.data.albums[0].links.images.href;
+        let { data } = await api.get(`${albumImagesLink}?apikey=${API_KEY}`);
+        let imageURL = null;
+        if (data.images.length > 0) {
+            imageURL = data.images[0].url
+        }
+
+        topTracks.push({
+            id: track.id,
+            image: imageURL,
+            title: track.name,
+            url: track.previewURL,
+            albumName: track.albumName,
+            artistName: track.artistName,
+            duration: track.playbackSeconds,
+        });
+    });
+
+    const genresMapPromises = genresAPIResponse.data.genres.map(async (genre: any) => {
+        genres.push({
+            id: genre.id,
+            description: genre.description,
+            name: genre.name,
+        })
+    });
 
     const albumsMapPromises = albumsAPIResponse.data.albums.map(async (album: any) => {
         let { data } = await api.get(`${album.links.images.href}?apikey=${API_KEY}`);
@@ -151,6 +232,11 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
     });
 
     await Promise.all(albumsMapPromises);
+    await Promise.all(genresMapPromises);
+    await Promise.all(topTracksMapPromises);
+
+    console.log(topTracks)
+
 
     const artist = {
         id: data.artists[0].id,
@@ -158,7 +244,9 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
         image: images.data.images[3].url || null,
         type: data.artists[0].type,
         bio: data.artists[0].bios[0].bio || '',
-        albums: albums,
+        albums,
+        genres,
+        topTracks,
     }
 
     return {
