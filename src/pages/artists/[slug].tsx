@@ -95,7 +95,11 @@ export default function Episode({ artist }: ArtistProps) {
                         <title>{artist.name} | Musifavs</title>
                     </Head>
                     <div className={styles.topBackgroundImage}>
-                        <img src={artist.image} alt={artist.name} />
+                        {artist.image ?
+                            <img src={artist.image} alt={artist.name} />
+                            :
+                            <img src="/default.png" alt={artist.name} />
+                        }
                     </div>
                     <div className={styles.artist}>
                         <div className={styles.thumbnailContainer}>
@@ -104,13 +108,21 @@ export default function Episode({ artist }: ArtistProps) {
                                     <img src="/arrow-left.svg" alt="Voltar" />
                                 </button>
                             </Link>
-
-                            <Image
-                                width={700}
-                                height={258}
-                                src={artist.image}
-                                objectFit="cover"
-                            />
+                            {artist.image ?
+                                <Image
+                                    width={700}
+                                    height={258}
+                                    src={artist.image}
+                                    objectFit="cover"
+                                />
+                                :
+                                <Image
+                                    width={700}
+                                    height={258}
+                                    src="/default.png"
+                                    objectFit="cover"
+                                />
+                            }
 
                             <button type="button">
                                 <img src="/play.svg" alt="Tocar episódio" />
@@ -274,15 +286,22 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
     await Promise.all(genresMapPromises);
     await Promise.all(topTracksMapPromises);
 
-    console.log(topTracks)
+    let bio = '';
+    if (data.artists[0].bios) {
+        bio = data.artists[0].bios[0].bio
+    }
 
+    let image = null;
+    if (images.data.images[3]) {
+        image = images.data.images[3].url
+    }
 
     const artist = {
         id: data.artists[0].id,
         name: data.artists[0].name,
-        image: images.data.images[3].url || null,
+        image,
         type: data.artists[0].type,
-        bio: data.artists[0].bios[0].bio || '',
+        bio,
         albums,
         genres,
         topTracks,

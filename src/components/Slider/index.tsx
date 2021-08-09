@@ -121,9 +121,11 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
                                         <a><img src={item.image} alt={item.name} /></a>
                                     </Link>
                                     :
-                                    <a href={`${item.link}?apikey=${API_KEY}`}>
-                                        <img src="default.png" alt={item.name} />
-                                    </a>
+                                    <Link href={`/artists/${item.id}`}>
+                                        <a>
+                                            <img src="default.png" alt={item.name} />
+                                        </a>
+                                    </Link>
                             }
 
                             <p>{item.name}</p>
