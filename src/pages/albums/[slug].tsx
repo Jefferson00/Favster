@@ -1,5 +1,6 @@
 import { GetStaticPaths, GetStaticProps } from "next";
 import Head from "next/head";
+import Link from "next/link";
 import { ImgHTMLAttributes, useEffect, useRef, useState } from "react";
 import { Header } from "../../components/Header";
 import { Player } from "../../components/Player";
@@ -78,6 +79,11 @@ export default function Album({ album }: AlbumProps) {
           </div>
           <div className={styles.album}>
             <div className={styles.albumContainer}>
+              <Link href="/">
+                <button className={styles.sideButton} type="button">
+                  <img src="/arrow-left.svg" alt="Voltar" />
+                </button>
+              </Link>
               <div className={styles.imageContainer}>
                 {album.image ?
                   <img src={album.image} alt={album.name} />
@@ -109,38 +115,39 @@ export default function Album({ album }: AlbumProps) {
                   {album.copyright}
                 </p>
               </div>
-
+              <button className={styles.sideButton} type="button">
+                <img src="/play.svg" alt="Tocar episódio" />
+              </button>
             </div>
 
-
-
-
-            <div className={styles.similarAlbumsContainer}>
-              <h2>Albuns</h2>
-              <div className={styles.albumsList}>
-                {similarAlbums.map(album => {
-                  return (
-                    <div className={styles.album} key={album.id}>
-                      {album.image ?
-                        <img src={album.image} alt={album.name} />
-                        :
-                        <img src="default.png" alt={album.name} />
-                      }
-                      <p>{album.name}</p>
-                      <span>{album.artistName}</span>
-                    </div>
-                  )
-                })}
+            {similarAlbums.length !== 0 &&
+              <div className={styles.similarAlbumsContainer}>
+                <h2>Albuns</h2>
+                <div className={styles.albumsList}>
+                  {similarAlbums.map(album => {
+                    return (
+                      <div className={styles.album} key={album.id}>
+                        {album.image ?
+                          <img src={album.image} alt={album.name} />
+                          :
+                          <img src="default.png" alt={album.name} />
+                        }
+                        <p>{album.name}</p>
+                        <span>{album.artistName}</span>
+                      </div>
+                    )
+                  })}
+                </div>
+                <footer>
+                  <button onClick={toggleShowAllAlbums}>
+                    {showingAllAlbums ?
+                      <img src="/chevron-up.svg" alt="ocultar" /> :
+                      <img src="/plus.svg" alt="ver mais" />
+                    }
+                  </button>
+                </footer>
               </div>
-              <footer>
-                <button onClick={toggleShowAllAlbums}>
-                  {showingAllAlbums ?
-                    <img src="/chevron-up.svg" alt="ocultar" /> :
-                    <img src="/plus.svg" alt="ver mais" />
-                  }
-                </button>
-              </footer>
-            </div>
+            }
           </div>
         </div>
       </main>

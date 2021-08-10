@@ -43,14 +43,43 @@
       45deg
       , #FFA800, #FF6400);
     border-radius: 10px;
-    overflow: hidden;
+    
 
+    .sideButton{
+      width: 3rem;
+        height: 3rem;
+        border-radius: 0.75rem;
+        border: 0;
+        position: absolute;
+        z-index: 5;
+        font-size: 0;
+        transition: filter 0.2s;
+
+        &:first-child {
+          left: 0;
+          top: 50%;
+          background: var(--purple-500);
+          transform: translate(-50%, -50%);
+        }
+  
+        &:last-child {
+          right: 0;
+          top: 50%;
+          background: var(--green-500);
+          transform: translate(50%, -50%);
+        }
+  
+        &:hover {
+          filter: brightness(0.9);
+        }
+    }
 
     .imageContainer{
       max-height: 27rem;
       max-width: 27rem;
       img{
         max-height: 100%;
+        border-radius: 10px 0 0 10px;
       }
     }
 
