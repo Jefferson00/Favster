@@ -117,15 +117,27 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
                                     <img src="default.png" alt={item.name} />
                                 :
                                 item.image ?
-                                    <Link href={`/artists/${item.id}`}>
-                                        <a><img src={item.image} alt={item.name} /></a>
-                                    </Link>
+                                    item.type === 'artist' ?
+                                        <Link href={`/artists/${item.id}`}>
+                                            <a><img src={item.image} alt={item.name} /></a>
+                                        </Link>
+                                        :
+                                        <Link href={`/albums/${item.id}`}>
+                                            <a><img src={item.image} alt={item.name} /></a>
+                                        </Link>
                                     :
-                                    <Link href={`/artists/${item.id}`}>
-                                        <a>
-                                            <img src="default.png" alt={item.name} />
-                                        </a>
-                                    </Link>
+                                    item.type === 'artist' ?
+                                        <Link href={`/artists/${item.id}`}>
+                                            <a>
+                                                <img src="default.png" alt={item.name} />
+                                            </a>
+                                        </Link>
+                                        :
+                                        <Link href={`/albums/${item.id}`}>
+                                            <a>
+                                                <img src="default.png" alt={item.name} />
+                                            </a>
+                                        </Link>
                             }
 
                             <p>{item.name}</p>
