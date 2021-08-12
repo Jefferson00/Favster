@@ -163,7 +163,7 @@ export function SearchContextProvider({ children }: SearchContextProviderProps) 
       searchAll(searchContent).finally(() => {
         setSearchLoading(false)
       });
-    }, 1000);
+    }, 500);
     return () => clearTimeout(timer);
   }, [searchContent]);
 

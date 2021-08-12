@@ -33,10 +33,7 @@ type Data = {
 //TODO responsividade, PWA, dark theme, Eletron
 
 export default function Home() {
-  const { user } = useAuth();
-  const { playList } = usePlayer();
   const {
-    searchAll,
     handleChangeSearchContent,
     albums,
     artists,
@@ -79,7 +76,7 @@ export default function Home() {
                 :
                 (artists.length === 0 && albums.length === 0) ?
                   <>
-                    <h3>Encontre seus artistas, álbuns e genêros preferidos </h3>
+                    <h3>Encontre seus artistas, álbuns e músicas preferidos </h3>
                     <img src="illustration-home.svg" alt="home" />
                   </>
                   :

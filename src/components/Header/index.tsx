@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useAuth } from '../../contexts/AuthContext';
 import styles from './styles.module.scss';
 
@@ -6,9 +7,13 @@ export function Header() {
 
     return (
         <header className={styles.headerContainer}>
-            <img src="/logo.svg" alt="Musifavs" />
+            <Link href="/">
+                <a>
+                    <img src="/logo.svg" alt="Musifavs" />
+                </a>
+            </Link>
 
-            <p>O melhor para você ouvir, sempre</p>
+            <p>Suas músicas favoritas, em um só lugar</p>
 
             {user &&
                 <button onClick={signOut}>

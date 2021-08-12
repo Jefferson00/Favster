@@ -183,7 +183,10 @@ export default function Episode({ artist }: ArtistProps) {
                                                     :
                                                     <img src="default.png" alt={track.title} />
                                                 }
-                                                <button className={styles.playButton} onClick={() => playList(trackList, index)}>
+                                                <button
+                                                    className={styles.playButton}
+                                                    onClick={() => playList(trackList, index)}
+                                                >
                                                     <img src="/play-green.svg" alt="Tocar" />
                                                 </button>
                                             </div>

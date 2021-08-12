@@ -40,12 +40,11 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
 
     const [nextItem, setNextItem] = useState(0);
     const [prevItem, setPrevItem] = useState(0);
+    const [isItemClicked, setIsItemClicked] = useState(false);
 
     const [isResultsSmallerThanList, setIsResultsSmallerThanList] = useState(true);
 
     const [trackList, setTrackList] = useState<Track[]>([]);
-
-    const API_KEY = process.env.NEXT_PUBLIC_NAPSTER_API_KEY;
 
     function handleNextItem() {
         if ((nextItem + 1) < data.length) {
@@ -93,6 +92,7 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
 
     return (
         <div className={styles.sliderContainer}>
+            {isItemClicked && <h3>Carregando...</h3>}
             <h3>{translateType(data[0].type)}</h3>
 
             {!isResultsSmallerThanList &&
@@ -111,30 +111,40 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
                             ref={itemRef}
                         >
                             {item.type === 'track' ?
-                                item.image ?
-                                    <img src={item.image} alt={item.name} />
-                                    :
-                                    <img src="default.png" alt={item.name} />
+                                <div className={styles.imageContainer}>
+                                    {item.image ?
+                                        <img src={item.image} alt={item.name} />
+                                        :
+                                        <img src="default.png" alt={item.name} />
+                                    }
+                                    <button className={styles.playButton} onClick={() => playList(trackList, index)}>
+                                        <img src="/play-green.svg" alt="Tocar" />
+                                    </button>
+                                </div>
                                 :
                                 item.image ?
                                     item.type === 'artist' ?
                                         <Link href={`/artists/${item.id}`}>
-                                            <a><img src={item.image} alt={item.name} /></a>
+                                            <a onClick={() => setIsItemClicked(true)}>
+                                                <img src={item.image} alt={item.name} />
+                                            </a>
                                         </Link>
                                         :
                                         <Link href={`/albums/${item.id}`}>
-                                            <a><img src={item.image} alt={item.name} /></a>
+                                            <a onClick={() => setIsItemClicked(true)}>
+                                                <img src={item.image} alt={item.name} />
+                                            </a>
                                         </Link>
                                     :
                                     item.type === 'artist' ?
                                         <Link href={`/artists/${item.id}`}>
-                                            <a>
+                                            <a onClick={() => setIsItemClicked(true)}>
                                                 <img src="default.png" alt={item.name} />
                                             </a>
                                         </Link>
                                         :
                                         <Link href={`/albums/${item.id}`}>
-                                            <a>
+                                            <a onClick={() => setIsItemClicked(true)}>
                                                 <img src="default.png" alt={item.name} />
                                             </a>
                                         </Link>
@@ -144,12 +154,6 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
 
                             {item.subtitle && <span>{item.subtitle}</span>}
                             {item.artistName && <span>{item.artistName}</span>}
-
-                            {item.type === 'track' &&
-                                <button className={styles.playButton} onClick={() => playList(trackList, index)}>
-                                    <img src="/play-green.svg" alt="Tocar" />
-                                </button>
-                            }
                         </div>
                     )
                 })}
