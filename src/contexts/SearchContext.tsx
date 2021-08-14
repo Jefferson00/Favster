@@ -74,7 +74,7 @@ export function SearchContextProvider({ children }: SearchContextProviderProps) 
         let { data } = await api.get(`${album.links.images.href}?apikey=${API_KEY}`);
         let imageUrl = null;
         if (data.images.length > 0) {
-          imageUrl = data.images[0].url
+          imageUrl = data.images[3].url
         }
 
         albumsReturned.push({
@@ -103,7 +103,7 @@ export function SearchContextProvider({ children }: SearchContextProviderProps) 
         let { data } = await api.get(`${artist.links.images.href}?apikey=${API_KEY}`);
         let imageURL = null;
         if (data.images.length > 0) {
-          imageURL = data.images[0].url
+          imageURL = data.images[3].url
         }
 
         artistsReturned.push({
@@ -133,7 +133,7 @@ export function SearchContextProvider({ children }: SearchContextProviderProps) 
         let { data } = await api.get(`${albumImagesLink}?apikey=${API_KEY}`);
         let imageURL = null;
         if (data.images.length > 0) {
-          imageURL = data.images[0].url
+          imageURL = data.images[3].url
         }
 
         tracksReturned.push({

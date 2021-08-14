@@ -1,0 +1,77 @@
+
+    .tracksContainer
+    {
+      margin-top: 2.3rem;
+
+      .tracksList{
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        margin-top: 1.188rem;
+
+        .track{
+          text-align: center;
+          max-width: min-content;
+          .imageContainer{
+            width: 8.625rem;
+            position: relative;
+
+            img{
+              width: inherit;
+            }
+
+            .playButton{
+              background: transparent;
+              border: none;
+              width: 100%;
+              height: 2.25rem;
+              font-size: 0;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              margin-top: 1rem;
+              position: absolute;
+              top: 0;
+              transform: translate(50%, 80%);
+  
+              img{
+                width: 2.25rem;
+                height: 2.25rem;
+              }
+            }
+          } 
+
+          p{
+            &:first-child{
+              font-weight: 500;
+            }
+            &:last-child{
+              font-size: 0.8rem;
+              margin-top: 0.5rem;
+            }
+          }
+        }
+      }
+      footer{
+        margin-top: 1rem;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+
+        button{
+          background: transparent;
+          border: none;
+          transition: filter 0.4s;
+
+          img{
+            height: 2rem;
+            width: 2rem;
+          }
+
+          &:hover{
+            filter: brightness(0.9);
+          }
+        }
+      }
+    }

@@ -16,6 +16,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { parseCookies } from 'nookies';
 import { Slider } from '../components/Slider';
 import { useSearch } from '../contexts/SearchContext';
+import { motion } from 'framer-motion'
 
 type Data = {
   id: string;
@@ -76,8 +77,20 @@ export default function Home() {
                 :
                 (artists.length === 0 && albums.length === 0) ?
                   <>
-                    <h3>Encontre seus artistas, álbuns e músicas preferidos </h3>
-                    <img src="illustration-home.svg" alt="home" />
+                    <motion.div
+                      initial={{ x: 60, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.2 }}
+                    >
+                      <h3>Encontre seus artistas, álbuns e músicas preferidos </h3>
+                    </motion.div>
+                    <motion.img
+                      initial={{ y: 60, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.5 }}
+                      src="illustration-home.svg"
+                      alt="home"
+                    />
                   </>
                   :
                   <>
@@ -102,7 +115,6 @@ export default function Home() {
                   </>
               }
             </main>
-
           </section>
         </div>
       </main>
