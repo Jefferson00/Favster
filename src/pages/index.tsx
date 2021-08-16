@@ -1,37 +1,18 @@
 import { GetServerSideProps } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
 import Head from 'next/head';
-import { Header } from '../components/Header';
-import { Player } from '../components/Player';
-import { AxiosResponse } from 'axios';
-
-
-import api from '../services/api';
 
 import styles from './home.module.scss';
-import { usePlayer } from '../contexts/PlayerContext';
-import { useEffect, useRef, useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
-import { parseCookies } from 'nookies';
-import { Slider } from '../components/Slider';
+
 import { useSearch } from '../contexts/SearchContext';
-import { motion } from 'framer-motion'
 
-type Data = {
-  id: string;
-  name: string;
-  image: string | null;
-  link: string;
-  type: string;
-  subtitle?: string;
-  previewURL?: string;
-  duration?: number;
-  albumName?: string;
-  artistName?: string;
-};
+import { Header } from '../components/Header';
+import { Player } from '../components/Player';
+import { Slider } from '../components/Slider';
 
-//TODO responsividade, PWA, dark theme, Eletron
+import { parseCookies } from 'nookies';
+import { motion } from 'framer-motion';
+
+//TODO responsividade, PWA, dark theme
 
 export default function Home() {
   const {
@@ -47,12 +28,13 @@ export default function Home() {
     <div className={styles.wrapper}>
       <main>
         <Header />
-        <div className={styles.homepage}>
+
+        <div className={styles.homeContainer}>
           <Head>
             <title>Home | Musifavs</title>
           </Head>
 
-          <section className={styles.main}>
+          <section className={styles.homeContent}>
             <header>
               <div className={styles.inputContainer}>
                 <img src="search.svg" alt="procurar" />
@@ -73,9 +55,11 @@ export default function Home() {
 
             <main>
               {searchLoading ?
-                <p>Carregando...</p>
+                <div className={styles.loadingContainer}>
+                  <img src="/loading-2.gif" alt="carregando" />
+                </div>
                 :
-                (artists.length === 0 && albums.length === 0) ?
+                (artists.length === 0 && albums.length === 0 && tracks.length === 0) ?
                   <>
                     <motion.div
                       initial={{ x: 60, opacity: 0 }}
@@ -135,9 +119,5 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     }
   }
 
-  return {
-    props: {
-
-    },
-  }
+  return
 }

@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { usePlayer } from '../../contexts/PlayerContext';
-import { translateType } from '../../utils/translateType';
+
 import styles from './styles.module.scss';
+import { translateType } from '../../utils/translateType';
+import { fadeInUp, stagger } from '../../styles/animations';
+import { usePlayer } from '../../contexts/PlayerContext';
+
 import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { fadeInUp, stagger } from '../../styles/animations';
 
 interface DataProps {
     id: string;
@@ -65,6 +67,66 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
         }
     }
 
+    function setItemList(item: DataProps, index: number) {
+        let imageSource = 'default.png';
+        let routeName = '';
+
+        if (item.image) {
+            imageSource = item.image;
+        }
+
+        if (item.type === 'artist') {
+            routeName = 'artists';
+        }
+
+        if (item.type === 'album') {
+            routeName = 'albums';
+        }
+
+
+        if (item.type === "track") {
+            return (
+                <div className={styles.imageContainer}>
+                    <img src={imageSource} alt={item.name} />
+
+                    <button
+                        className={styles.playButton}
+                        onClick={() => playList(trackList, index)}
+                    >
+                        <motion.img
+                            whileHover={{ scale: 1.1 }}
+                            src="/play-green.svg"
+                            alt="Tocar"
+                        />
+                    </button>
+                </div>
+            )
+        }
+        else {
+            return (
+                <motion.div
+                    whileHover={{ y: 5 }}
+                    whileTap={{ scale: 0.95 }}
+                >
+                    <Link href={`/${routeName}/${item.id}`}>
+                        <a onClick={() => setIsItemClicked(true)}>
+                            <motion.img
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{
+                                    duration: 0.4,
+                                    delay: 0.2
+                                }}
+                                src={imageSource}
+                                alt={item.name}
+                            />
+                        </a>
+                    </Link>
+                </motion.div>
+            )
+        }
+    }
+
     useEffect(() => {
         if (listRef.current && itemRef.current) {
             setPrevItem(data.length);
@@ -96,12 +158,11 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
     }, [data, loadingIndicator]);
 
     useEffect(() => {
-        console.log(inView)
         if (inView) {
             controls.start('animate');
         }
         if (!inView) {
-            controls.start('initial')
+            controls.start('initial');
         }
     }, [controls, inView]);
 
@@ -112,7 +173,11 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
             animate={controls}
             ref={ref}
             className={styles.sliderContainer}>
-            {isItemClicked && <h3>Carregando...</h3>}
+            {isItemClicked &&
+                <div className={styles.loadingContainer}>
+                    <img src="/loading-2.gif" alt="carregando" />
+                </div>
+            }
             <h3>{translateType(data[0].type)}</h3>
 
             {!isResultsSmallerThanList &&
@@ -135,99 +200,14 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
                         <motion.div
                             key={item.id}
                             variants={fadeInUp}
-
                         >
                             <div
-
                                 className={styles.listItem}
                                 id={index.toString() + "-" + item.type}
                                 ref={itemRef}
                             >
-                                {item.type === 'track' ?
-                                    <div className={styles.imageContainer}>
-                                        {item.image ?
-                                            <img src={item.image} alt={item.name} />
-                                            :
-                                            <img src="default.png" alt={item.name} />
-                                        }
-                                        <button className={styles.playButton} onClick={() => playList(trackList, index)}>
-                                            <motion.img
-                                                whileHover={{ scale: 1.1 }}
-                                                src="/play-green.svg"
-                                                alt="Tocar"
-                                            />
-                                        </button>
-                                    </div>
-                                    :
-                                    <motion.div
-                                        whileHover={{ y: 5 }}
-                                        whileTap={{ scale: 0.95 }}
-                                    >
-                                        {item.image ?
-                                            item.type === 'artist' ?
-                                                <Link href={`/artists/${item.id}`}>
-                                                    <a onClick={() => setIsItemClicked(true)}>
-                                                        <motion.img
-                                                            initial={{ scale: 0 }}
-                                                            animate={{ scale: 1 }}
-                                                            transition={{
-                                                                duration: 0.4,
-                                                                delay: 0.2
-                                                            }}
-                                                            src={item.image}
-                                                            alt={item.name}
-                                                        />
-                                                    </a>
-                                                </Link>
-                                                :
-                                                <Link href={`/albums/${item.id}`}>
-                                                    <a onClick={() => setIsItemClicked(true)}>
-                                                        <motion.img
-                                                            initial={{ scale: 0 }}
-                                                            animate={{ scale: 1 }}
-                                                            transition={{
-                                                                duration: 0.4,
-                                                                delay: 0.2
-                                                            }}
-                                                            src={item.image}
-                                                            alt={item.name}
-                                                        />
-                                                    </a>
-                                                </Link>
-                                            :
-                                            item.type === 'artist' ?
-                                                <Link href={`/artists/${item.id}`}>
-                                                    <a onClick={() => setIsItemClicked(true)}>
-                                                        <motion.img
-                                                            initial={{ scale: 0 }}
-                                                            animate={{ scale: 1 }}
-                                                            transition={{
-                                                                duration: 0.4,
-                                                                delay: 0.2
-                                                            }}
-                                                            src="default.png"
-                                                            alt={item.name}
-                                                        />
-                                                    </a>
-                                                </Link>
-                                                :
-                                                <Link href={`/albums/${item.id}`}>
-                                                    <a onClick={() => setIsItemClicked(true)}>
-                                                        <motion.img
-                                                            initial={{ scale: 0 }}
-                                                            animate={{ scale: 1 }}
-                                                            transition={{
-                                                                duration: 0.4,
-                                                                delay: 0.2
-                                                            }}
-                                                            src="default.png"
-                                                            alt={item.name}
-                                                        />
-                                                    </a>
-                                                </Link>
-                                        }
-                                    </motion.div>
-                                }
+                                {/*function that return a JSX element based on type of the item*/}
+                                {setItemList(item, index)}
 
                                 <p>{item.name}</p>
 
@@ -238,6 +218,7 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
                     )
                 })}
             </div>
+
             {!isResultsSmallerThanList &&
                 <motion.a
                     initial={{ x: '50%', y: '-50%' }}
