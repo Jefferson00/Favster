@@ -1,18 +1,22 @@
+import { useEffect, useState } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Image from 'next/image';
 import Head from "next/head";
 import Link from 'next/link';
+
 import api from "../../services/api";
+
 import styles from './artists.module.scss';
+import { fadeInUp, stagger } from "../../styles/animations";
+
 import { usePlayer } from "../../contexts/PlayerContext";
+
 import { Player } from "../../components/Player";
 import { Header } from "../../components/Header";
-import { useEffect, useState } from "react";
-import { motion, useAnimation } from 'framer-motion';
-import { useInView } from "react-intersection-observer";
-import { fadeInUp, stagger } from "../../styles/animations";
 import { Albums } from "./components/Albums";
 import { Tracks } from "./components/Tracks";
+
+import { motion } from 'framer-motion';
 
 type Album = {
     id: string;
@@ -55,7 +59,7 @@ type ArtistProps = {
 
 export default function Episode({ artist, slug, data }: ArtistProps) {
 
-    const { play, playList } = usePlayer();
+    const { playList } = usePlayer();
 
     const API_KEY = process.env.NEXT_PUBLIC_NAPSTER_API_KEY;
 
@@ -113,7 +117,7 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
             let { data } = await api.get(`${albumImagesLink}?apikey=${API_KEY}`);
             let imageURL = null;
             if (data.images.length > 0) {
-                imageURL = data.images[0].url
+                imageURL = data.images[3].url
             }
 
             topTracks.push({
@@ -218,7 +222,9 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
                             <motion.button
                                 initial={{ x: '50%', y: '-50%' }}
                                 whileHover={{ x: '60%' }}
-                                type="button">
+                                type="button"
+                                onClick={() => playList(artistTracks, 0)}
+                            >
                                 <img src="/play.svg" alt="Tocar episódio" />
                             </motion.button>
                         </motion.div>
@@ -228,16 +234,15 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
                                 variants={stagger}
                                 initial='initial'
                                 animate={'animate'}
-
                                 transition={{ delay: 0.6, duration: 0.8 }}
                             >
                                 <motion.h1 variants={fadeInUp}>{artist.name}</motion.h1>
                                 {
                                     genres.map(genre => {
                                         return (
-                                            <motion.span key={genre.id}
+                                            <motion.span
+                                                key={genre.id}
                                                 variants={fadeInUp}
-
                                             >
                                                 {genre.name}
                                             </motion.span>
@@ -279,8 +284,6 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
     const { data } = await api.get(`/artists/${slug}?apikey=${API_KEY}&lang=pt-BR`);
 
     let images = await api.get(`${data.artists[0].links.images.href}?apikey=${API_KEY}`);
-
-
 
     let bio = '';
     if (data.artists[0].bios) {

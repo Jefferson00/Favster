@@ -1,9 +1,11 @@
-import { motion, useAnimation } from "framer-motion"
 import { useEffect, useState } from "react";
-import { useInView } from "react-intersection-observer";
 import { usePlayer } from "../../../../contexts/PlayerContext";
+
 import { fadeInUp, stagger } from "../../../../styles/animations";
 import styles from './tracks.module.scss';
+
+import { useInView } from "react-intersection-observer";
+import { motion, useAnimation } from "framer-motion";
 
 type Track = {
   id: string;
@@ -24,6 +26,7 @@ export function Tracks({ artistTracks }: TracksProps) {
   const { playList } = usePlayer();
   const { ref, inView } = useInView();
   const [showingAllTracks, setShowingAllTracks] = useState(false);
+  const [isItemClicked, setIsItemClicked] = useState(false);
 
   const [tracks, setTracks] = useState<Track[]>([]);
 
@@ -72,12 +75,14 @@ export function Tracks({ artistTracks }: TracksProps) {
                   :
                   <img src="default.png" alt={track.title} />
                 }
-                <button
+                <motion.button
+                  initial={{ x: '50%', y: '80%' }}
+                  whileHover={{ y: '60%' }}
                   className={styles.playButton}
                   onClick={() => playList(artistTracks, index)}
                 >
                   <img src="/play-green.svg" alt="Tocar" />
-                </button>
+                </motion.button>
               </div>
               <p>{track.title}</p>
               <p>{track.albumName}</p>
@@ -86,12 +91,15 @@ export function Tracks({ artistTracks }: TracksProps) {
         })}
       </div>
       <footer>
-        <button onClick={toggleShowAllTracks}>
+        <motion.button
+          onClick={toggleShowAllTracks}
+          whileHover={{ y: -5 }}
+        >
           {showingAllTracks ?
             <img src="/chevron-up.svg" alt="ocultar" /> :
             <img src="/plus.svg" alt="ver mais" />
           }
-        </button>
+        </motion.button>
       </footer>
     </motion.div>
   )

@@ -1,44 +1,54 @@
-.albumsContainer
-    {
-      margin-top: 2.3rem;
+.albumsContainer{
+  margin-top: 2.3rem;
 
-      .albumsList{
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 1.5rem;
-        margin-top: 1.188rem;
+  .albumsList{
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-top: 1.188rem;
 
-        .album{
-          width: 8.625rem;
-          text-align: center;
-          position: relative;
-          max-width: min-content;
+    .album{
+      width: 8.625rem;
+      text-align: center;
+      position: relative;
+      max-width: min-content;
 
-          img{
-            width: inherit;
-          }
+      a {
+        width: inherit;
+        
+        img{
+          width: inherit;
         }
       }
-      footer{
+
+      p{
         margin-top: 1rem;
-        width: 100%;
-        display: flex;
-        justify-content: center;
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+    }
+  }
 
-        button{
-          background: transparent;
-          border: none;
-          transition: filter 0.4s;
+  footer{
+    margin-top: 1rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
 
-          img{
-            height: 2rem;
-            width: 2rem;
-          }
+    button{
+      background: transparent;
+      border: none;
+      transition: filter 0.4s;
 
-          &:hover{
-            filter: brightness(0.9);
-          }
-        }
+      img{
+        height: 2rem;
+        width: 2rem;
+      }
+
+      &:hover{
+        filter: brightness(0.9);
+      }
+    }
   }
 }

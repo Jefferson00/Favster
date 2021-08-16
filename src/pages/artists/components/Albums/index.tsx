@@ -1,8 +1,11 @@
-import { motion, useAnimation } from "framer-motion"
+import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useInView } from "react-intersection-observer";
+
 import { fadeInUp, stagger } from "../../../../styles/animations";
 import styles from './albums.module.scss';
+
+import { useInView } from "react-intersection-observer";
+import { motion, useAnimation } from "framer-motion";
 
 type Album = {
   id: string;
@@ -21,6 +24,7 @@ export function Albums({ artistAlbums }: AlbumsProps) {
   const controls = useAnimation();
   const { ref, inView } = useInView();
   const [showingAllAlbums, setShowingAllAlbums] = useState(false);
+  const [isItemClicked, setIsItemClicked] = useState(false);
 
   const [albums, setAlbums] = useState<Album[]>([]);
 
@@ -63,23 +67,41 @@ export function Albums({ artistAlbums }: AlbumsProps) {
               className={styles.album}
               key={album.id}
             >
-              {album.image ?
-                <img src={album.image} alt={album.name} />
-                :
-                <img src="default.png" alt={album.name} />
-              }
+              <Link href={`/albums/${album.id}`}>
+                <a onClick={() => setIsItemClicked(true)}>
+                  {album.image ?
+                    <motion.img
+                      src={album.image}
+                      alt={album.name}
+                      whileHover={{ y: -5 }}
+                      whileTap={{ scale: 0.95 }}
+                    />
+                    :
+                    <motion.img
+                      whileHover={{ y: -5 }}
+                      whileTap={{ scale: 0.95 }}
+                      src="default.png"
+                      alt={album.name}
+                    />
+                  }
+                </a>
+              </Link>
               <p>{album.name}</p>
             </motion.div>
           )
         })}
       </div>
+
       <footer>
-        <button onClick={toggleShowAllAlbums}>
+        <motion.button
+          onClick={toggleShowAllAlbums}
+          whileHover={{ y: -5 }}
+        >
           {showingAllAlbums ?
             <img src="/chevron-up.svg" alt="ocultar" /> :
             <img src="/plus.svg" alt="ver mais" />
           }
-        </button>
+        </motion.button>
       </footer>
     </motion.div>
   )
