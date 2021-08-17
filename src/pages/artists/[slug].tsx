@@ -17,6 +17,9 @@ import { Albums } from "../../components/Albums";
 import { Tracks } from "../../components/Tracks";
 
 import { motion } from 'framer-motion';
+import { Rating } from "../../components/Rating";
+import { database } from "../../services/firebase";
+import { useAuth } from "../../contexts/AuthContext";
 
 type Album = {
     id: string;
@@ -60,6 +63,7 @@ type ArtistProps = {
 export default function Episode({ artist, slug, data }: ArtistProps) {
 
     const { playList } = usePlayer();
+    const { user } = useAuth();
 
     const API_KEY = process.env.NEXT_PUBLIC_NAPSTER_API_KEY;
 
@@ -68,6 +72,10 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
     const [artistTracks, setArtistTracks] = useState<Track[]>([]);
 
     const [genres, setGenres] = useState<Genre[]>([]);
+
+    const [isFavorite, setIsFavorite] = useState(false);
+
+    const [ratingValue, setRatingValue] = useState(0);
 
     async function getRemainingData() {
         const albumsForArtist = await getAlbumsData();
@@ -153,9 +161,63 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
         return genres;
     }
 
+    async function handleCreateFavArtist() {
+        const id = artist.id.replace('.', '');
+
+        const artistsRef = database.ref(`libs/${user.id}/artists/${id}`);
+
+        const artistRefExist = await artistsRef.get();
+
+        if (artistRefExist.exists()) {
+            await artistsRef.remove();
+            setIsFavorite(false);
+        } else {
+            await artistsRef.set({
+                id: artist.id,
+                name: artist.name,
+                type: artist.type,
+                bio: artist.bio,
+                image: artist.image,
+                rating: 0,
+                userId: user?.id,
+            });
+            setIsFavorite(true);
+        }
+    }
+
+    async function verifyFavArtist() {
+        if (user) {
+            const id = artist.id.replace('.', '');
+
+            const artistsRef = database.ref(`libs/${user?.id}/artists/${id}`);
+
+            const artistRefExist = await artistsRef.get();
+
+            if (artistRefExist.exists()) {
+                setRatingValue(artistRefExist.val().rating);
+                setIsFavorite(true);
+            } else {
+                setIsFavorite(false);
+            }
+        }
+    }
+
+    async function handleChangeRating(value: number) {
+        setRatingValue(value);
+        const id = artist.id.replace('.', '');
+
+        const artistsRef = database.ref(`libs/${user?.id}/artists/${id}`);
+
+        await artistsRef.update({ 'rating': value });
+    }
+
     useEffect(() => {
         getRemainingData();
     }, []);
+
+    useEffect(() => {
+        verifyFavArtist();
+    }, [user]);
 
     return (
         <div className={styles.wrapper}>
@@ -189,11 +251,13 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
                             variants={fadeInUp}
                             className={styles.thumbnailContainer}
                         >
+
                             <Link href="/">
                                 <motion.button
                                     type="button"
                                     initial={{ x: '-50%', y: '-50%' }}
                                     whileHover={{ x: '-60%' }}
+                                    className={styles.sideButton}
                                 >
                                     <img
                                         src="/arrow-left.svg"
@@ -218,16 +282,40 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
                                     objectFit="cover"
                                 />
                             }
-
+                            {user &&
+                                <div className={styles.favstarContainer}>
+                                    <motion.button
+                                        type="button"
+                                        whileTap={{
+                                            rotate: 90,
+                                            scale: 1.5,
+                                        }}
+                                        onClick={handleCreateFavArtist}
+                                    >
+                                        {isFavorite ?
+                                            <img src="/star-selected.svg" alt="favoritar" />
+                                            :
+                                            <img src="/star.svg" alt="favoritar" />
+                                        }
+                                    </motion.button>
+                                </div>
+                            }
                             <motion.button
                                 initial={{ x: '50%', y: '-50%' }}
                                 whileHover={{ x: '60%' }}
                                 type="button"
+                                className={styles.sideButton}
                                 onClick={() => playList(artistTracks, 0)}
                             >
                                 <img src="/play.svg" alt="Tocar episódio" />
                             </motion.button>
                         </motion.div>
+                        {(user && isFavorite) &&
+                            <Rating
+                                value={ratingValue}
+                                onChange={(value) => handleChangeRating(value)}
+                            />
+                        }
 
                         <header>
                             <motion.div
@@ -236,7 +324,9 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
                                 animate={'animate'}
                                 transition={{ delay: 0.6, duration: 0.8 }}
                             >
-                                <motion.h1 variants={fadeInUp}>{artist.name}</motion.h1>
+                                <motion.h1 variants={fadeInUp}>
+                                    {artist.name}
+                                </motion.h1>
                                 {
                                     genres.map(genre => {
                                         return (
