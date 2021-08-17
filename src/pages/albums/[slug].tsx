@@ -53,12 +53,13 @@ type AlbumProps = {
 export default function Album({ album, slug, artistId }: AlbumProps) {
   const API_KEY = process.env.NEXT_PUBLIC_NAPSTER_API_KEY;
 
-  const { playList } = usePlayer();
+  const { playList, currentTrackIndex, trackList } = usePlayer();
   const albumImageRef = useRef<HTMLImageElement>(null);
 
   const [similarAlbums, setSimilarAlbums] = useState<Albums[]>([]);
   const [artistAlbums, setArtistAlbums] = useState<Albums[]>([]);
   const [tracks, setTracks] = useState<Track[]>([]);
+  const [currentTrack, setCurrentTrack] = useState('');
 
   async function getRemainingData() {
     const similarAlbums = await getSimilarAlbumsData();
@@ -149,7 +150,13 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
 
   useEffect(() => {
     getRemainingData();
-  }, []);
+  }, [album, slug, artistId]);
+
+  useEffect(() => {
+    if (trackList[currentTrackIndex]) {
+      setCurrentTrack(trackList[currentTrackIndex].title);
+    }
+  }, [trackList, currentTrackIndex]);
 
   return (
     <div className={styles.wrapper}>
@@ -199,7 +206,7 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
                   <motion.img
                     src={album.image}
                     alt={album.name}
-                    initial={{ scale: 0, opacity: 0, borderRadius: '50%' }}
+                    initial={{ scale: 0, opacity: 0, borderRadius: '500px 500px 500px 500px' }}
                     animate={{ scale: 1, opacity: 1, borderRadius: '10px 0 0 10px' }}
                     transition={{
                       duration: 0.4,
@@ -227,8 +234,17 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
                     return (
                       <motion.div variants={fadeInUp} key={track.id}>
                         <button onClick={() => playList(tracks, index)}>
-                          <strong>{index + 1}. </strong>
-                          <span>{track.title}</span>
+                          {currentTrack === track.title ?
+                            <>
+                              <strong style={{ color: '#414141' }}>{index + 1}. </strong>
+                              <span style={{ color: '#414141' }}>{track.title}</span>
+                            </>
+                            :
+                            <>
+                              <strong>{index + 1}. </strong>
+                              <span>{track.title}</span>
+                            </>
+                          }
                         </button>
 
                         <button>
@@ -239,7 +255,7 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
                   })}
                 </motion.div>
                 <p>
-                  {album.copyright}
+                  &copy; {album.copyright}
                 </p>
               </div>
 
