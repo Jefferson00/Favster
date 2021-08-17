@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { usePlayer } from "../../../../contexts/PlayerContext";
+import { usePlayer } from "../../contexts/PlayerContext";
 
-import { fadeInUp, stagger } from "../../../../styles/animations";
+import { fadeInUp, stagger } from "../../styles/animations";
 import styles from './tracks.module.scss';
 
 import { useInView } from "react-intersection-observer";

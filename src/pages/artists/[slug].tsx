@@ -13,8 +13,8 @@ import { usePlayer } from "../../contexts/PlayerContext";
 
 import { Player } from "../../components/Player";
 import { Header } from "../../components/Header";
-import { Albums } from "./components/Albums";
-import { Tracks } from "./components/Tracks";
+import { Albums } from "../../components/Albums";
+import { Tracks } from "../../components/Tracks";
 
 import { motion } from 'framer-motion';
 
@@ -257,7 +257,7 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
                             dangerouslySetInnerHTML={{ __html: artist.bio }}
                         />
 
-                        <Albums artistAlbums={artistAlbums} />
+                        <Albums albumList={artistAlbums} />
 
                         <Tracks artistTracks={artistTracks} />
                     </div>

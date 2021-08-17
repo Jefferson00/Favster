@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-import { fadeInUp, stagger } from "../../../../styles/animations";
+import { fadeInUp, stagger } from "../../styles/animations";
 import styles from './albums.module.scss';
 
 import { useInView } from "react-intersection-observer";
@@ -17,10 +17,11 @@ type Album = {
 }
 
 interface AlbumsProps {
-  artistAlbums: Album[],
+  albumList: Album[],
+  listType?: "similar" | "artist",
 }
 
-export function Albums({ artistAlbums }: AlbumsProps) {
+export function Albums({ albumList, listType }: AlbumsProps) {
   const controls = useAnimation();
   const { ref, inView } = useInView();
   const [showingAllAlbums, setShowingAllAlbums] = useState(false);
@@ -30,11 +31,11 @@ export function Albums({ artistAlbums }: AlbumsProps) {
 
   useEffect(() => {
     if (showingAllAlbums) {
-      setAlbums(artistAlbums);
+      setAlbums(albumList);
     } else {
-      setAlbums(artistAlbums.slice(0, 10));
+      setAlbums(albumList.slice(0, 10));
     }
-  }, [artistAlbums, showingAllAlbums]);
+  }, [albumList, showingAllAlbums]);
 
 
   function toggleShowAllAlbums() {
@@ -58,7 +59,11 @@ export function Albums({ artistAlbums }: AlbumsProps) {
       animate={showingAllAlbums ? 'animate' : controls}
       ref={ref}
     >
-      <h2>Albuns</h2>
+      {listType === 'similar' ?
+        <h2>Álbuns Similares</h2>
+        :
+        <h2>Outros Álbuns</h2>
+      }
       <div className={styles.albumsList}>
         {albums.map(album => {
           return (
@@ -87,6 +92,9 @@ export function Albums({ artistAlbums }: AlbumsProps) {
                 </a>
               </Link>
               <p>{album.name}</p>
+              {listType === 'similar' &&
+                <span>{album.artistName}</span>
+              }
             </motion.div>
           )
         })}

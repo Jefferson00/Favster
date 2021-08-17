@@ -28,6 +28,24 @@ export const stagger = {
   },
 };
 
+export const staggerDelay = {
+  initial: {
+    y: 60,
+    opacity: 0,
+    transition: { duration: 0.6, ease: easing }
+  },
+  animate: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      delay: 1,
+      duration: 0.6,
+      ease: easing,
+      staggerChildren: 0.5
+    }
+  },
+};
+
 export const fadeIn = {
   initial: {
     opacity: 0,
