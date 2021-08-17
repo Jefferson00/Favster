@@ -12,6 +12,7 @@ import { motion, useAnimation } from 'framer-motion';
 export function Player() {
     const audioRef = useRef<HTMLAudioElement>(null)
     const [progress, setProgress] = useState(0);
+    const [loading, setLoading] = useState(false);
     const controls = useAnimation();
 
     const {
@@ -48,6 +49,12 @@ export function Player() {
     };
 
     useEffect(() => {
+        if (track) {
+            setLoading(true);
+        }
+    }, [track])
+
+    useEffect(() => {
         if (!audioRef.current) {
             return;
         }
@@ -57,7 +64,7 @@ export function Player() {
 
         } else {
             audioRef.current.pause();
-
+            setLoading(false);
         }
 
     }, [isPlaying]);
@@ -72,6 +79,7 @@ export function Player() {
     }, [controls, isPlaying]);
 
     function setupProgressListener() {
+        setLoading(false);
         audioRef.current.currentTime = 0;
 
         audioRef.current.addEventListener('timeupdate', () => {
@@ -105,7 +113,7 @@ export function Player() {
             }
             <header>
                 <img src="/playing.svg" alt="Tocando agora" />
-                <strong>Tocando agora</strong>
+                <strong>{loading ? 'carregando...' : 'Tocando agora'} </strong>
             </header>
 
             {track ? (

@@ -13,6 +13,22 @@
   height: calc(100vh - 6.5rem);
   position: relative;
 
+  &::-webkit-scrollbar{
+    width: 4px;
+    background: transparent;
+  }
+
+  &::-moz-scrollbar{
+    width: 4px;
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb{
+    background: var(--gray-200);
+    border-radius: 5px;
+    height: 5px;
+  }
+
   .topBackgroundImage{
     position: absolute;
     top: 0;
