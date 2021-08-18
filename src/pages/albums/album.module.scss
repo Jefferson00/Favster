@@ -59,6 +59,7 @@
       45deg
       , #FFA800, #FF6400);
     border-radius: 10px;
+    margin-bottom: 1rem;
     
 
     .sideButton{
@@ -96,6 +97,31 @@
       img{
         max-height: 100%;
         border-radius: 10px 0 0 10px;
+      }
+
+
+      .favstarContainer{
+        position: absolute;
+        top: 0;
+        right:0;
+        z-index: 5;
+        padding: 1rem;
+  
+        button{
+          width: 2rem;
+          height: 2rem;
+          background: transparent;
+          border: none;
+          transition: filter 0.2s;
+  
+          img{
+            width: 100%;
+          }
+  
+          &:hover{
+            filter: brightness(0.8);
+          }
+        }
       }
     }
 

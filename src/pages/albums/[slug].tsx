@@ -15,6 +15,9 @@ import styles from './album.module.scss';
 import { fadeInUp, stagger, staggerDelay } from "../../styles/animations";
 
 import { motion } from 'framer-motion';
+import { database } from "../../services/firebase";
+import { useAuth } from "../../contexts/AuthContext";
+import { Rating } from "../../components/Rating";
 
 type Track = {
   id: string;
@@ -54,12 +57,15 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
   const API_KEY = process.env.NEXT_PUBLIC_NAPSTER_API_KEY;
 
   const { playList, currentTrackIndex, trackList } = usePlayer();
+  const { user } = useAuth();
   const albumImageRef = useRef<HTMLImageElement>(null);
 
   const [similarAlbums, setSimilarAlbums] = useState<Albums[]>([]);
   const [artistAlbums, setArtistAlbums] = useState<Albums[]>([]);
   const [tracks, setTracks] = useState<Track[]>([]);
   const [currentTrack, setCurrentTrack] = useState('');
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [ratingValue, setRatingValue] = useState(0);
 
   async function getRemainingData() {
     const similarAlbums = await getSimilarAlbumsData();
@@ -148,9 +154,63 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
     return tracks;
   }
 
+  async function handleCreateFavAlbum() {
+    const id = album.id.replace('.', '');
+
+    const albumRef = database.ref(`libs/${user.id}/albums/${id}`);
+
+    const albumRefExist = await albumRef.get();
+
+    if (albumRefExist.exists()) {
+      await albumRef.remove();
+      setIsFavorite(false);
+    } else {
+      await albumRef.set({
+        id: album.id,
+        name: album.name,
+        artistName: album.artistName,
+        image: album.image,
+        rating: 0,
+        userId: user?.id,
+      });
+      setIsFavorite(true);
+    }
+  }
+
+  async function verifyFavAlbum() {
+    if (user) {
+      const id = album.id.replace('.', '');
+
+      const albumsRef = database.ref(`libs/${user?.id}/albums/${id}`);
+
+      const albumRefExist = await albumsRef.get();
+
+      if (albumRefExist.exists()) {
+        setRatingValue(albumRefExist.val().rating);
+        setIsFavorite(true);
+      } else {
+        setIsFavorite(false);
+      }
+    }
+  }
+
+  async function handleChangeRating(value: number) {
+    setRatingValue(value);
+    const id = album.id.replace('.', '');
+
+    const albumsRef = database.ref(`libs/${user?.id}/albums/${id}`);
+
+    await albumsRef.update({ 'rating': value });
+  }
+
+
   useEffect(() => {
     getRemainingData();
   }, [album, slug, artistId]);
+
+  useEffect(() => {
+    verifyFavAlbum();
+  }, [user]);
 
   useEffect(() => {
     if (trackList[currentTrackIndex]) {
@@ -217,6 +277,22 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
                   :
                   <img src="/default.png" alt={album.name} />
                 }
+                <div className={styles.favstarContainer}>
+                  <motion.button
+                    type="button"
+                    whileTap={{
+                      rotate: 90,
+                      scale: 1.5,
+                    }}
+                    onClick={handleCreateFavAlbum}
+                  >
+                    {isFavorite ?
+                      <img src="/star-selected.svg" alt="favoritar" />
+                      :
+                      <img src="/star.svg" alt="favoritar" />
+                    }
+                  </motion.button>
+                </div>
               </div>
 
               <div className={styles.tracksContainer}>
@@ -269,6 +345,12 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
               </motion.button>
             </motion.div>
 
+            {(user && isFavorite) &&
+              <Rating
+                value={ratingValue}
+                onChange={(value) => handleChangeRating(value)}
+              />
+            }
 
             {artistAlbums.length !== 0 &&
               <Albums albumList={artistAlbums} />
