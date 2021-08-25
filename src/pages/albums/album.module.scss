@@ -133,10 +133,20 @@
       align-items: center;
       padding: 2rem;
       overflow: hidden;
-     
-      h5{
-        font-weight: 400;
+
+      a{
+        text-decoration: none;
+
+        h5{
+          font-weight: 400;
+          transition: color 0.4s;
+          
+          &:hover{
+            color:var(--gray-900);
+          }
+        }
       }
+      
 
       .trackList{
         display: flex;

@@ -382,7 +382,11 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
 
               <div className={styles.tracksContainer}>
                 <h3>{album.name}</h3>
-                <h5>{album.artistName}</h5>
+                <Link href={`/artists/${artistId}`}>
+                  <a>
+                    <h5>{album.artistName}</h5>
+                  </a>
+                </Link>
 
                 <motion.div
                   className={styles.trackList}
