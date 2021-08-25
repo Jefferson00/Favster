@@ -20,6 +20,8 @@ import { useAuth } from "../../contexts/AuthContext";
 import { Rating } from "../../components/Rating";
 
 import { TrackProps, AlbumsProps } from "./interfaces"
+import { useRouter } from "next/router";
+import axios from "axios";
 
 type AlbumProps = {
   album: AlbumsProps,
@@ -29,6 +31,7 @@ type AlbumProps = {
 
 export default function Album({ album, slug, artistId }: AlbumProps) {
   const API_KEY = process.env.NEXT_PUBLIC_NAPSTER_API_KEY;
+  const router = useRouter();
 
   const { playList, currentTrackIndex, trackList } = usePlayer();
   const { user } = useAuth();
@@ -291,9 +294,14 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
   }
 
   useEffect(() => {
+    const source = axios.CancelToken.source();
+
+    setLoading(false);
+
     getRemainingData();
     verifyFavAlbum();
-    setLoading(false);
+
+    return () => source.cancel();
   }, [album, slug, artistId, user]);
 
   useEffect(() => {
@@ -329,22 +337,20 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
           <div className={styles.album}>
             <motion.div
               className={styles.albumContainer}
-
               initial='initial'
               animate='animate'
               transition={{ delay: 0.5 }}
               variants={fadeInUp}
             >
-              <Link href="/">
-                <motion.button
-                  initial={{ x: '-50%', y: '-50%' }}
-                  whileHover={{ x: '-60%' }}
-                  className={styles.sideButton}
-                  type="button"
-                >
-                  <img src="/arrow-left.svg" alt="Voltar" />
-                </motion.button>
-              </Link>
+              <motion.button
+                initial={{ x: '-50%', y: '-50%' }}
+                whileHover={{ x: '-60%' }}
+                className={styles.sideButton}
+                type="button"
+                onClick={() => router.back()}
+              >
+                <img src="/arrow-left.svg" alt="Voltar" />
+              </motion.button>
 
               <div className={styles.imageContainer}>
                 {album.image ?

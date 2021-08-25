@@ -1,10 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { GetStaticPaths, GetStaticProps } from "next";
 import Image from 'next/image';
 import Head from "next/head";
-import Link from 'next/link';
 
 import api from "../../services/api";
+import { API_KEY } from "../../config/ApiKey";
+import axios from "axios";
 
 import styles from './artists.module.scss';
 import { fadeInUp, stagger } from "../../styles/animations";
@@ -20,6 +21,7 @@ import { motion } from 'framer-motion';
 import { Rating } from "../../components/Rating";
 import { database } from "../../services/firebase";
 import { useAuth } from "../../contexts/AuthContext";
+import { useRouter } from "next/router";
 
 type Album = {
     id: string;
@@ -60,24 +62,35 @@ type ArtistProps = {
     data: any,
 }
 
-export default function Episode({ artist, slug, data }: ArtistProps) {
-
+export default function Artists({ artist, slug, data }: ArtistProps) {
+    const router = useRouter();
     const { playList } = usePlayer();
     const { user } = useAuth();
 
-    const API_KEY = process.env.NEXT_PUBLIC_NAPSTER_API_KEY;
+    const containerRef = useRef<HTMLDivElement>(null);
 
     const [artistAlbums, setArtistAlbums] = useState<Album[]>([]);
-
     const [artistTracks, setArtistTracks] = useState<Track[]>([]);
-
     const [genres, setGenres] = useState<Genre[]>([]);
 
     const [isFavorite, setIsFavorite] = useState(false);
-
     const [ratingValue, setRatingValue] = useState(0);
 
-    async function getRemainingData() {
+    const [loading, setLoading] = useState(false);
+
+    /**
+     * Add loading and scroll page to top
+     */
+    function onAlbumItemSelected() {
+        setLoading(true);
+
+        containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /**
+     * Set data for albums, tracks and genres from artist
+     */
+    async function setArtistRemainingData() {
         const albumsForArtist = await getAlbumsData();
         setArtistAlbums(albumsForArtist);
         const topTracks = await getTracksData();
@@ -86,6 +99,10 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
         setGenres(genresForArtist);
     }
 
+    /**
+     * get albums data from artist selected
+     * @returns albums: Array
+     */
     async function getAlbumsData() {
         let albums: Album[] = [];
 
@@ -114,6 +131,10 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
         return albums;
     }
 
+    /**
+     * get tracks data from artist selected
+     * @returns tracks: Array
+     */
     async function getTracksData() {
         let topTracks: Track[] = [];
 
@@ -144,6 +165,10 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
         return topTracks;
     }
 
+    /**
+     * get genres data from artist selected
+     * @returns genres: Array
+     */
     async function getGenreData() {
         let genres: Genre[] = [];
         let genresAPIResponse = await api.get(`${data.artists[0].links.genres.href}?apikey=${API_KEY}`);
@@ -161,7 +186,10 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
         return genres;
     }
 
-    async function handleCreateFavArtist() {
+    /**
+     * Verify if an artist is favorite or not and add or remove the artist from favorites 
+     */
+    async function toggleFavArtist() {
         const id = artist.id.replace('.', '');
 
         const artistsRef = database.ref(`libs/${user.id}/artists/${id}`);
@@ -185,6 +213,10 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
         }
     }
 
+    /**
+     * Verify if the artist selected is favorite or not 
+     * and set the state for favorite and rating value
+     */
     async function verifyFavArtist() {
         if (user) {
             const id = artist.id.replace('.', '');
@@ -198,10 +230,15 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
                 setIsFavorite(true);
             } else {
                 setIsFavorite(false);
+                setRatingValue(0);
             }
         }
     }
 
+    /**
+     * Change de rating value for an favorite artist
+     * @param value : number
+     */
     async function handleChangeRating(value: number) {
         setRatingValue(value);
         const id = artist.id.replace('.', '');
@@ -212,23 +249,32 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
     }
 
     useEffect(() => {
-        getRemainingData();
+        const source = axios.CancelToken.source();
+
+        setArtistRemainingData();
+
+        return () => source.cancel();
     }, []);
 
     useEffect(() => {
+        const source = axios.CancelToken.source();
+
         verifyFavArtist();
+
+        return () => source.cancel();
     }, [user]);
 
     return (
         <div className={styles.wrapper}>
             <main>
                 <Header />
-                <div className={styles.container}>
+                <div className={styles.container} ref={containerRef}>
                     <Head>
                         <title>{artist.name} | Musifavs</title>
                     </Head>
+
                     <motion.div
-                        className={styles.topBackgroundImage}
+                        className={styles.artistBackgroundImage}
                         initial={{ y: 60, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{
@@ -239,7 +285,7 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
                         {artist.image ?
                             <img src={artist.image} alt={artist.name} />
                             :
-                            <img src="/default.png" alt={artist.name} />
+                            <img src="/default-artist.svg" alt={artist.name} />
                         }
                     </motion.div>
 
@@ -252,19 +298,19 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
                             className={styles.thumbnailContainer}
                         >
 
-                            <Link href="/">
-                                <motion.button
-                                    type="button"
-                                    initial={{ x: '-50%', y: '-50%' }}
-                                    whileHover={{ x: '-60%' }}
-                                    className={styles.sideButton}
-                                >
-                                    <img
-                                        src="/arrow-left.svg"
-                                        alt="Voltar"
-                                    />
-                                </motion.button>
-                            </Link>
+                            <motion.button
+                                type="button"
+                                initial={{ x: '-50%', y: '-50%' }}
+                                whileHover={{ x: '-60%' }}
+                                className={styles.sideButton}
+                                onClick={() => router.back()}
+                            >
+                                <img
+                                    src="/arrow-left.svg"
+                                    alt="Voltar"
+                                />
+                            </motion.button>
+
                             {artist.image ?
                                 <Image
                                     width={700}
@@ -278,7 +324,7 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
                                 <Image
                                     width={700}
                                     height={258}
-                                    src="/default.png"
+                                    src="/default-artist.svg"
                                     objectFit="cover"
                                 />
                             }
@@ -290,7 +336,7 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
                                             rotate: 90,
                                             scale: 1.5,
                                         }}
-                                        onClick={handleCreateFavArtist}
+                                        onClick={toggleFavArtist}
                                     >
                                         {isFavorite ?
                                             <img src="/star-selected.svg" alt="favoritar" />
@@ -347,7 +393,11 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
                             dangerouslySetInnerHTML={{ __html: artist.bio }}
                         />
 
-                        <Albums albumList={artistAlbums} />
+                        <Albums
+                            albumList={artistAlbums}
+                            loading={loading}
+                            onItemSelected={onAlbumItemSelected}
+                        />
 
                         <Tracks artistTracks={artistTracks} />
                     </div>
@@ -355,7 +405,6 @@ export default function Episode({ artist, slug, data }: ArtistProps) {
             </main>
             <Player />
         </div>
-
     )
 }
 
@@ -368,8 +417,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
 
 export const getStaticProps: GetStaticProps = async (ctx) => {
     const { slug } = ctx.params;
-
-    const API_KEY = process.env.NEXT_PUBLIC_NAPSTER_API_KEY;
 
     const { data } = await api.get(`/artists/${slug}?apikey=${API_KEY}&lang=pt-BR`);
 

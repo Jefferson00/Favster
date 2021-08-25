@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Albums } from '../../components/Albums';
 import { Artists } from '../../components/Artists';
 import { Header } from '../../components/Header';
@@ -69,11 +69,20 @@ type Track = {
 
 export default function Library() {
   const { user } = useAuth();
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const [artists, setArtists] = useState<Artist[]>([]);
   const [albums, setAlbums] = useState<Album[]>([]);
   const [tracks, setTracks] = useState<Track[]>([]);
   const [typeSelected, setTypeSelected] = useState<'artist' | 'album' | 'track'>('artist');
+
+  const [loading, setLoading] = useState(false);
+
+  function onAlbumItemSelected() {
+    setLoading(true);
+
+    containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   async function handleSelectAlbum() {
     setTypeSelected('album');
@@ -151,7 +160,7 @@ export default function Library() {
       <main>
         <Header />
 
-        <div className={styles.container}>
+        <div className={styles.container} ref={containerRef}>
           <Head>
             <title>Home | Musifavs</title>
           </Head>
@@ -194,7 +203,12 @@ export default function Library() {
                 <Artists artistsList={artists} listType="favorites" />
               }
               {typeSelected === 'album' &&
-                <Albums albumList={albums} listType="library" />
+                <Albums
+                  albumList={albums}
+                  loading={loading}
+                  onItemSelected={onAlbumItemSelected}
+                  listType="library"
+                />
               }
               {typeSelected === 'track' &&
                 <Tracks artistTracks={tracks} listType="library" />
