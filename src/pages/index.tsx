@@ -11,6 +11,7 @@ import { Slider } from '../components/Slider';
 
 import { parseCookies } from 'nookies';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 //TODO responsividade, PWA, dark theme
 
@@ -48,9 +49,11 @@ export default function Home() {
                 />
               </div>
 
-              <button>
-                Minha biblioteca
-              </button>
+              <Link href="/library">
+                <a>
+                  Minha biblioteca
+                </a>
+              </Link>
             </header>
 
             <main>

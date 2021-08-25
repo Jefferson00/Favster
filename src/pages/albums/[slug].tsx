@@ -12,43 +12,17 @@ import { usePlayer } from "../../contexts/PlayerContext";
 import api from "../../services/api";
 
 import styles from './album.module.scss';
-import { fadeInUp, stagger, staggerDelay } from "../../styles/animations";
+import { fadeInUp, staggerDelay } from "../../styles/animations";
 
 import { motion } from 'framer-motion';
 import { database } from "../../services/firebase";
 import { useAuth } from "../../contexts/AuthContext";
 import { Rating } from "../../components/Rating";
 
-type Track = {
-  id: string;
-  title: string;
-  artistName: string;
-  albumName: string;
-  image: string;
-  duration: number;
-  url: string;
-}
-
-type Albums = {
-  id: string;
-  name: string;
-  releasedDate: Date;
-  copyright: string;
-  artistName: string;
-  image: string | null;
-}
-
-type Album = {
-  id: string;
-  name: string;
-  releasedDate: Date;
-  copyright: string;
-  artistName: string;
-  image: string | null;
-}
+import { TrackProps, AlbumsProps } from "./interfaces"
 
 type AlbumProps = {
-  album: Album,
+  album: AlbumsProps,
   slug: string,
   artistId: string,
 }
@@ -60,9 +34,9 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
   const { user } = useAuth();
   const albumImageRef = useRef<HTMLImageElement>(null);
 
-  const [similarAlbums, setSimilarAlbums] = useState<Albums[]>([]);
-  const [artistAlbums, setArtistAlbums] = useState<Albums[]>([]);
-  const [tracks, setTracks] = useState<Track[]>([]);
+  const [similarAlbums, setSimilarAlbums] = useState<AlbumsProps[]>([]);
+  const [artistAlbums, setArtistAlbums] = useState<AlbumsProps[]>([]);
+  const [tracks, setTracks] = useState<TrackProps[]>([]);
   const [currentTrack, setCurrentTrack] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
   const [ratingValue, setRatingValue] = useState(0);
@@ -70,8 +44,13 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
   async function getRemainingData() {
     const similarAlbums = await getSimilarAlbumsData();
     setSimilarAlbums(similarAlbums);
+
     const albumTracks = await getTracksData();
-    setTracks(albumTracks);
+
+    const verifiedTracks = await verifyFavTracks(albumTracks);
+
+    setTracks(verifiedTracks);
+
     if (artistId) {
       const artistAlbumsReturned = await getArtistAlbumsData();
       setArtistAlbums(artistAlbumsReturned);
@@ -79,7 +58,7 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
   }
 
   async function getSimilarAlbumsData() {
-    let similarAlbums: Albums[] = [];
+    let similarAlbums: AlbumsProps[] = [];
 
     let similarAlbumsAPIResponse = await api.get(`/albums/${slug}/similar?apikey=${API_KEY}`);
 
@@ -106,7 +85,7 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
   }
 
   async function getArtistAlbumsData() {
-    let artistAlbums: Albums[] = [];
+    let artistAlbums: AlbumsProps[] = [];
 
     let artistAlbumsAPIResponse = await api.get(`/artists/${artistId}/albums/top?apikey=${API_KEY}`);
 
@@ -133,7 +112,7 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
   }
 
   async function getTracksData() {
-    let tracks: Track[] = [];
+    let tracks: TrackProps[] = [];
 
     let tracksAPIResponse = await api.get(`/albums/${slug}/tracks?apikey=${API_KEY}`);
 
@@ -146,6 +125,7 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
         albumName: track.albumName,
         artistName: track.artistName,
         duration: track.playbackSeconds,
+        isFavorite: false,
       });
     });
 
@@ -162,9 +142,11 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
     const albumRefExist = await albumRef.get();
 
     if (albumRefExist.exists()) {
+      handleToggleFavTracklist(true);
       await albumRef.remove();
       setIsFavorite(false);
     } else {
+      handleToggleFavTracklist(false);
       await albumRef.set({
         id: album.id,
         name: album.name,
@@ -174,6 +156,82 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
         userId: user?.id,
       });
       setIsFavorite(true);
+    }
+  }
+
+  async function handleToggleFavTracklist(isFavorite: boolean) {
+    tracks.map(async (track, index) => {
+      const id = track.id.replace('.', '');
+      const trackRef = database.ref(`libs/${user.id}/tracks/${id}`);
+      const trackRefExist = await trackRef.get();
+
+      if (isFavorite) {
+        await trackRef.remove();
+
+        setTracks([...tracks].map((track) => {
+          return {
+            ...track,
+            isFavorite: false
+          }
+        }));
+      } else {
+        setTracks([...tracks].map((track) => {
+          return {
+            ...track,
+            isFavorite: true
+          }
+        }));
+        if (!trackRefExist.exists()) {
+          await trackRef.set({
+            id: track.id,
+            name: track.title,
+            artistName: track.artistName,
+            albumName: track.albumName,
+            image: track.image,
+            previewUrl: track.url,
+            rating: 0,
+            userId: user?.id,
+          });
+        }
+      }
+    });
+  }
+
+  function updateFavTrack(index: number) {
+    setTracks([...tracks].map((track, idx) => {
+      if (idx === index) {
+        return {
+          ...track,
+          isFavorite: !track.isFavorite
+        }
+      } else {
+        return track;
+      }
+    }));
+  }
+
+  async function handleToggleFavTracks(track: TrackProps, index: number) {
+    const id = track.id.replace('.', '');
+
+    const trackRef = database.ref(`libs/${user.id}/tracks/${id}`);
+
+    const trackRefExist = await trackRef.get();
+
+    updateFavTrack(index);
+
+    if (trackRefExist.exists()) {
+      await trackRef.remove();
+    } else {
+      await trackRef.set({
+        id: track.id,
+        name: track.title,
+        artistName: track.artistName,
+        albumName: track.albumName,
+        image: track.image,
+        previewUrl: track.url,
+        rating: 0,
+        userId: user?.id,
+      });
     }
   }
 
@@ -203,14 +261,34 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
     await albumsRef.update({ 'rating': value });
   }
 
+  async function verifyFavTracks(albumTracks: TrackProps[]) {
+    if (user) {
+      const mapPromisse = albumTracks.map(async (track) => {
+        const id = track.id.replace('.', '');
+        const trackRef = database.ref(`libs/${user.id}/tracks/${id}`);
+        const trackRefExist = await trackRef.get();
+        if (trackRefExist.exists()) {
+          track.isFavorite = true;
+        } else {
+          track.isFavorite = false;
+        }
+      });
+
+      await Promise.all(mapPromisse);
+    }
+
+    return albumTracks;
+  }
+
 
   useEffect(() => {
     getRemainingData();
-  }, [album, slug, artistId]);
+
+  }, [album, slug, artistId, user]);
 
   useEffect(() => {
     verifyFavAlbum();
-  }, [user]);
+  }, [user, album]);
 
   useEffect(() => {
     if (trackList[currentTrackIndex]) {
@@ -323,8 +401,12 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
                           }
                         </button>
 
-                        <button>
-                          <img src="/star-outline.svg" alt="favoritar" />
+                        <button onClick={() => handleToggleFavTracks(track, index)}>
+                          {track.isFavorite ?
+                            <img src="/star-selected.svg" alt="favoritar" />
+                            :
+                            <img src="/star.svg" alt="favoritar" />
+                          }
                         </button>
                       </motion.div>
                     )

@@ -1,5 +1,4 @@
 import styles from './styles.module.scss';
-import { motion } from 'framer-motion';
 import RatingComponent, { RatingComponentProps } from 'react-rating';
 
 interface RatingProps extends RatingComponentProps {
@@ -19,7 +18,6 @@ export function Rating({ value, ...rest }: RatingProps) {
         }
         fractions={2}
         initialRating={value}
-
       />
     </div>
   )

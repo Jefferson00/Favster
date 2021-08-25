@@ -1,0 +1,59 @@
+.wrapper{
+  display: flex;
+
+  main{
+      flex: 1;
+      width: calc(100vw - 26.5rem);
+      scroll-behavior: smooth;
+  }
+}
+
+.container{
+  overflow-y: scroll;
+  height: calc(100vh - 6.5rem);
+  position: relative;
+
+  &::-webkit-scrollbar{
+    width: 4px;
+    background: transparent;
+  }
+
+  &::-moz-scrollbar{
+    width: 4px;
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb{
+    background: var(--gray-200);
+    border-radius: 5px;
+    height: 5px;
+  }
+
+  .content{
+    width: 100%;
+    padding: 1.563rem 4rem;
+
+
+    header{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      width: 100%;
+
+      button{
+        border: none;
+        background: transparent;
+        color: #808080;
+        font-size: 1.5rem;
+        font-weight: 600;
+      }
+    }
+
+    main{
+      max-width: 53rem;
+      padding: 3rem 0;
+      margin: 0 auto;
+    }
+  }
+}

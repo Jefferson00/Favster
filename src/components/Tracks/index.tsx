@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { usePlayer } from "../../contexts/PlayerContext";
 
 import { fadeInUp, stagger } from "../../styles/animations";
@@ -6,6 +6,7 @@ import styles from './tracks.module.scss';
 
 import { useInView } from "react-intersection-observer";
 import { motion, useAnimation } from "framer-motion";
+import { Rating } from "../Rating";
 
 type Track = {
   id: string;
@@ -15,13 +16,15 @@ type Track = {
   image: string;
   duration: number;
   url: string;
+  rating?: number;
 }
 
 interface TracksProps {
   artistTracks: Track[],
+  listType?: "artist" | "library",
 }
 
-export function Tracks({ artistTracks }: TracksProps) {
+export function Tracks({ artistTracks, listType }: TracksProps) {
   const controls = useAnimation();
   const { playList } = usePlayer();
   const { ref, inView } = useInView();
@@ -69,6 +72,11 @@ export function Tracks({ artistTracks }: TracksProps) {
               className={styles.track}
               key={track.id}
             >
+              {listType === 'library' &&
+                <Rating
+                  value={track.rating}
+                />
+              }
               <div className={styles.imageContainer}>
                 {track.image ?
                   <img src={track.image} alt={track.title} />
@@ -90,6 +98,7 @@ export function Tracks({ artistTracks }: TracksProps) {
           )
         })}
       </div>
+
       <footer>
         <motion.button
           onClick={toggleShowAllTracks}

@@ -1,20 +1,18 @@
-.albumsContainer{
+.artistsContainer{
   margin-top: 2.3rem;
 
-  .albumsList{
+  .artistsList{
     display: flex;
     justify-content: center;
-    align-items: flex-start;
     flex-wrap: wrap;
     gap: 1.5rem;
     margin-top: 1.188rem;
 
-    .album{
-      display: flex;
-      flex-direction: column;
-      text-align: center;
+    .artist{
       width: 8.625rem;
+      text-align: center;
       position: relative;
+      max-width: min-content;
 
       a {
         width: inherit;
@@ -33,32 +31,10 @@
         font-weight: 600;
       }
       
-      .artistName{
+      span{
         font-size: 0.8rem;
         margin-top: 0.5rem;
         font-weight: normal;
-      }
-    }
-  }
-
-  footer{
-    margin-top: 1rem;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-
-    button{
-      background: transparent;
-      border: none;
-      transition: filter 0.4s;
-
-      img{
-        height: 2rem;
-        width: 2rem;
-      }
-
-      &:hover{
-        filter: brightness(0.9);
       }
     }
   }

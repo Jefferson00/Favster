@@ -6,19 +6,21 @@ import styles from './albums.module.scss';
 
 import { useInView } from "react-intersection-observer";
 import { motion, useAnimation } from "framer-motion";
+import { Rating } from "../Rating";
 
 type Album = {
   id: string;
   name: string;
-  releasedDate: Date;
-  copyright: string;
+  releasedDate?: Date;
+  copyright?: string;
   artistName: string;
   image: string | null;
+  rating?: number;
 }
 
 interface AlbumsProps {
   albumList: Album[],
-  listType?: "similar" | "artist",
+  listType?: "similar" | "artist" | "library",
 }
 
 export function Albums({ albumList, listType }: AlbumsProps) {
@@ -49,7 +51,7 @@ export function Albums({ albumList, listType }: AlbumsProps) {
     if (!inView) {
       controls.start('initial');
     }
-  }, [controls, inView, showingAllAlbums]);
+  }, [controls, inView, showingAllAlbums, albums]);
 
   return (
     <motion.div
@@ -62,7 +64,7 @@ export function Albums({ albumList, listType }: AlbumsProps) {
       {listType === 'similar' ?
         <h2>Álbuns Similares</h2>
         :
-        <h2>Outros Álbuns</h2>
+        <h2>Álbuns</h2>
       }
       <div className={styles.albumsList}>
         {albums.map(album => {
@@ -72,6 +74,12 @@ export function Albums({ albumList, listType }: AlbumsProps) {
               className={styles.album}
               key={album.id}
             >
+              {listType === 'library' &&
+                <Rating
+                  value={album.rating}
+                />
+              }
+
               <Link href={`/albums/${album.id}`}>
                 <a onClick={() => setIsItemClicked(true)}>
                   {album.image ?
@@ -91,9 +99,12 @@ export function Albums({ albumList, listType }: AlbumsProps) {
                   }
                 </a>
               </Link>
+
               <p>{album.name}</p>
-              {listType === 'similar' &&
-                <span>{album.artistName}</span>
+              {listType !== 'artist' &&
+                <span className={styles.artistName}>
+                  {album.artistName}
+                </span>
               }
             </motion.div>
           )
@@ -111,6 +122,7 @@ export function Albums({ albumList, listType }: AlbumsProps) {
           }
         </motion.button>
       </footer>
+
     </motion.div>
   )
 }
