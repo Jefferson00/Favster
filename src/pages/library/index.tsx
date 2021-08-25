@@ -135,6 +135,8 @@ export default function Library() {
   }
 
   useEffect(() => {
+    let mounted = true;
+
     if (user) {
       const artistsRef = database.ref(`libs/${user?.id}/artists`);
 
@@ -153,6 +155,7 @@ export default function Library() {
         setArtists(parsedArtist);
       });
     }
+    return () => { mounted = false }
   }, [user?.id]);
 
   return (

@@ -10,6 +10,8 @@ import { Player } from "../../components/Player";
 import { usePlayer } from "../../contexts/PlayerContext";
 
 import api from "../../services/api";
+import { API_KEY } from "../../config/ApiKey";
+import axios from "axios";
 
 import styles from './album.module.scss';
 import { fadeInUp, staggerDelay } from "../../styles/animations";
@@ -21,7 +23,6 @@ import { Rating } from "../../components/Rating";
 
 import { TrackProps, AlbumsProps } from "./interfaces"
 import { useRouter } from "next/router";
-import axios from "axios";
 
 type AlbumProps = {
   album: AlbumsProps,
@@ -30,11 +31,10 @@ type AlbumProps = {
 }
 
 export default function Album({ album, slug, artistId }: AlbumProps) {
-  const API_KEY = process.env.NEXT_PUBLIC_NAPSTER_API_KEY;
   const router = useRouter();
-
   const { playList, currentTrackIndex, trackList } = usePlayer();
   const { user } = useAuth();
+
   const albumImageRef = useRef<HTMLImageElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -42,25 +42,33 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
   const [artistAlbums, setArtistAlbums] = useState<AlbumsProps[]>([]);
   const [tracks, setTracks] = useState<TrackProps[]>([]);
   const [currentTrack, setCurrentTrack] = useState('');
+
   const [isFavorite, setIsFavorite] = useState(false);
   const [ratingValue, setRatingValue] = useState(0);
 
   const [loading, setLoading] = useState(false);
 
+  /**
+  * Add loading and scroll page to top
+  */
   function onAlbumItemSelected() {
     setLoading(true);
 
     containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  async function getRemainingData() {
+  /**
+   * set similar albums, tracks and others albums from the same artist from album selected
+   */
+  async function setAlbumRemainingData() {
     const similarAlbums = await getSimilarAlbumsData();
     setSimilarAlbums(similarAlbums);
 
     const albumTracks = await getTracksData();
-
+    /**
+     * Verify if tracks from album are favorites or not
+     */
     const verifiedTracks = await verifyFavTracks(albumTracks);
-
     setTracks(verifiedTracks);
 
     if (artistId) {
@@ -69,6 +77,10 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
     }
   }
 
+  /**
+   * get similar albums data from album selected
+   * @returns similarAlbums: Array
+   */
   async function getSimilarAlbumsData() {
     let similarAlbums: AlbumsProps[] = [];
 
@@ -96,6 +108,10 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
     return similarAlbums;
   }
 
+  /**
+   * get albums data from artist of album selected
+   * @returns artistAlbums: Array
+   */
   async function getArtistAlbumsData() {
     let artistAlbums: AlbumsProps[] = [];
 
@@ -123,6 +139,10 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
     return artistAlbums;
   }
 
+  /**
+   * get tracks data from album selected
+   * @returns tracks: Array
+   */
   async function getTracksData() {
     let tracks: TrackProps[] = [];
 
@@ -146,7 +166,11 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
     return tracks;
   }
 
-  async function handleCreateFavAlbum() {
+  /**
+   * Verify if an album is favorite or not and add or remove the album from favorites
+   * and does the same with tracks
+   */
+  async function toggleFavAlbum() {
     const id = album.id.replace('.', '');
 
     const albumRef = database.ref(`libs/${user.id}/albums/${id}`);
@@ -154,11 +178,12 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
     const albumRefExist = await albumRef.get();
 
     if (albumRefExist.exists()) {
-      handleToggleFavTracklist(true);
-      await albumRef.remove();
+      toggleFavTracklist(true);
       setIsFavorite(false);
+      await albumRef.remove();
     } else {
-      handleToggleFavTracklist(false);
+      toggleFavTracklist(false);
+      setIsFavorite(true);
       await albumRef.set({
         id: album.id,
         name: album.name,
@@ -167,12 +192,15 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
         rating: 0,
         userId: user?.id,
       });
-      setIsFavorite(true);
     }
   }
 
-  async function handleToggleFavTracklist(isFavorite: boolean) {
-    tracks.map(async (track, index) => {
+  /**
+   * Verify in a list of tracks if an track is favorite or not and add or remove the track from favorites
+   * @param isFavorite 
+   */
+  async function toggleFavTracklist(isFavorite: boolean) {
+    tracks.map(async (track) => {
       const id = track.id.replace('.', '');
       const trackRef = database.ref(`libs/${user.id}/tracks/${id}`);
       const trackRefExist = await trackRef.get();
@@ -209,6 +237,10 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
     });
   }
 
+  /**
+   * update favorite state of an track
+   * @param index : number
+   */
   function updateFavTrack(index: number) {
     setTracks([...tracks].map((track, idx) => {
       if (idx === index) {
@@ -222,7 +254,12 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
     }));
   }
 
-  async function handleToggleFavTracks(track: TrackProps, index: number) {
+  /**
+   * Verify if an track is favorite or not and add or remove the track from favorites
+   * @param track 
+   * @param index 
+   */
+  async function toggleFavTracks(track: TrackProps, index: number) {
     const id = track.id.replace('.', '');
 
     const trackRef = database.ref(`libs/${user.id}/tracks/${id}`);
@@ -247,6 +284,10 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
     }
   }
 
+  /**
+  * Verify if the album selected is favorite or not 
+  * and set the state for favorite and rating value
+  */
   async function verifyFavAlbum() {
     if (user) {
       const id = album.id.replace('.', '');
@@ -265,6 +306,10 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
     }
   }
 
+  /**
+   * Change de rating value for an favorite album
+   * @param value : number
+   */
   async function handleChangeRating(value: number) {
     setRatingValue(value);
     const id = album.id.replace('.', '');
@@ -274,6 +319,12 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
     await albumsRef.update({ 'rating': value });
   }
 
+  /**
+   * from a list of tracks, verify if track is favorite, update his 'isFavorite' value
+   * and return the list of tracks updated
+   * @param albumTracks : Array
+   * @returns albumTracks: Array
+   */
   async function verifyFavTracks(albumTracks: TrackProps[]) {
     if (user) {
       const mapPromisse = albumTracks.map(async (track) => {
@@ -298,7 +349,7 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
 
     setLoading(false);
 
-    getRemainingData();
+    setAlbumRemainingData();
     verifyFavAlbum();
 
     return () => source.cancel();
@@ -330,7 +381,7 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
             {album.image ?
               <img src={album.image} alt={album.name} ref={albumImageRef} />
               :
-              <img src="/default.png" alt={album.name} />
+              <img src="/default-album.svg" alt={album.name} />
             }
           </motion.div>
 
@@ -366,7 +417,7 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
                     }}
                   />
                   :
-                  <img src="/default.png" alt={album.name} />
+                  <img src="/default-album.svg" alt={album.name} />
                 }
                 <div className={styles.favstarContainer}>
                   <motion.button
@@ -375,7 +426,7 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
                       rotate: 90,
                       scale: 1.5,
                     }}
-                    onClick={handleCreateFavAlbum}
+                    onClick={toggleFavAlbum}
                   >
                     {isFavorite ?
                       <img src="/star-selected.svg" alt="favoritar" />
@@ -418,7 +469,7 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
                           }
                         </button>
 
-                        <button onClick={() => handleToggleFavTracks(track, index)}>
+                        <button onClick={() => toggleFavTracks(track, index)}>
                           {track.isFavorite ?
                             <img src="/star-selected.svg" alt="favoritar" />
                             :
