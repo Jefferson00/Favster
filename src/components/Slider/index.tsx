@@ -8,6 +8,7 @@ import { usePlayer } from '../../contexts/PlayerContext';
 
 import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
+import { Loading } from '../Loading';
 
 interface DataProps {
     id: string;
@@ -174,9 +175,7 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
             ref={ref}
             className={styles.sliderContainer}>
             {isItemClicked &&
-                <div className={styles.loadingContainer}>
-                    <img src="/loading-2.gif" alt="carregando" />
-                </div>
+                <Loading />
             }
             <h3>{translateType(data[0].type)}</h3>
 

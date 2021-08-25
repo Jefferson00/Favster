@@ -33,6 +33,7 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
   const { playList, currentTrackIndex, trackList } = usePlayer();
   const { user } = useAuth();
   const albumImageRef = useRef<HTMLImageElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const [similarAlbums, setSimilarAlbums] = useState<AlbumsProps[]>([]);
   const [artistAlbums, setArtistAlbums] = useState<AlbumsProps[]>([]);
@@ -40,6 +41,14 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
   const [currentTrack, setCurrentTrack] = useState('');
   const [isFavorite, setIsFavorite] = useState(false);
   const [ratingValue, setRatingValue] = useState(0);
+
+  const [loading, setLoading] = useState(false);
+
+  function onAlbumItemSelected() {
+    setLoading(true);
+
+    containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
   async function getRemainingData() {
     const similarAlbums = await getSimilarAlbumsData();
@@ -247,6 +256,7 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
         setRatingValue(albumRefExist.val().rating);
         setIsFavorite(true);
       } else {
+        setRatingValue(0);
         setIsFavorite(false);
       }
     }
@@ -280,15 +290,11 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
     return albumTracks;
   }
 
-
   useEffect(() => {
     getRemainingData();
-
-  }, [album, slug, artistId, user]);
-
-  useEffect(() => {
     verifyFavAlbum();
-  }, [user, album]);
+    setLoading(false);
+  }, [album, slug, artistId, user]);
 
   useEffect(() => {
     if (trackList[currentTrackIndex]) {
@@ -300,7 +306,7 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
     <div className={styles.wrapper}>
       <main>
         <Header />
-        <div className={styles.container}>
+        <div className={styles.container} ref={containerRef}>
           <Head>
             <title>{album.name} | Musifavs</title>
           </Head>
@@ -323,6 +329,7 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
           <div className={styles.album}>
             <motion.div
               className={styles.albumContainer}
+
               initial='initial'
               animate='animate'
               transition={{ delay: 0.5 }}
@@ -435,11 +442,20 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
             }
 
             {artistAlbums.length !== 0 &&
-              <Albums albumList={artistAlbums} />
+              <Albums
+                albumList={artistAlbums}
+                loading={loading}
+                onItemSelected={onAlbumItemSelected}
+              />
             }
 
             {similarAlbums.length !== 0 &&
-              <Albums albumList={similarAlbums} listType="similar" />
+              <Albums
+                albumList={similarAlbums}
+                listType="similar"
+                loading={loading}
+                onItemSelected={onAlbumItemSelected}
+              />
             }
           </div>
         </div>

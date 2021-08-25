@@ -1,0 +1,19 @@
+.loadingContainer{
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgb(247 248 250 / 60%);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    img{
+      height: 5rem;
+      width: 5rem;
+    }
+}

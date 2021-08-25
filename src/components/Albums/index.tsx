@@ -7,6 +7,7 @@ import styles from './albums.module.scss';
 import { useInView } from "react-intersection-observer";
 import { motion, useAnimation } from "framer-motion";
 import { Rating } from "../Rating";
+import { Loading } from "../Loading";
 
 type Album = {
   id: string;
@@ -20,14 +21,15 @@ type Album = {
 
 interface AlbumsProps {
   albumList: Album[],
+  loading?: boolean,
+  onItemSelected: () => void,
   listType?: "similar" | "artist" | "library",
 }
 
-export function Albums({ albumList, listType }: AlbumsProps) {
+export function Albums({ albumList, listType, loading, onItemSelected }: AlbumsProps) {
   const controls = useAnimation();
   const { ref, inView } = useInView();
   const [showingAllAlbums, setShowingAllAlbums] = useState(false);
-  const [isItemClicked, setIsItemClicked] = useState(false);
 
   const [albums, setAlbums] = useState<Album[]>([]);
 
@@ -61,6 +63,10 @@ export function Albums({ albumList, listType }: AlbumsProps) {
       animate={showingAllAlbums ? 'animate' : controls}
       ref={ref}
     >
+      {loading &&
+        <Loading />
+      }
+
       {listType === 'similar' ?
         <h2>Álbuns Similares</h2>
         :
@@ -81,7 +87,7 @@ export function Albums({ albumList, listType }: AlbumsProps) {
               }
 
               <Link href={`/albums/${album.id}`}>
-                <a onClick={() => setIsItemClicked(true)}>
+                <a onClick={onItemSelected}>
                   {album.image ?
                     <motion.img
                       src={album.image}

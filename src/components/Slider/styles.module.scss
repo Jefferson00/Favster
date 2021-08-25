@@ -6,22 +6,6 @@
     position: relative;
     margin-top: 1.56rem;
 
-    .loadingContainer{
-      position: absolute;
-      width: 100%;
-      background: var(--gray-50);
-      height: 100%;
-      z-index: 1;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-
-      img{
-        height: 5rem;
-        width: 5rem;
-      }
-    }
-
     .arrowButton{
       position: absolute;
       top: 50%;
