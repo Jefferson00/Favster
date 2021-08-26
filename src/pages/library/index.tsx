@@ -88,21 +88,21 @@ export default function Library() {
     setTypeSelected('album');
 
     if (user) {
-      const albumsRef = database.ref(`libs/${user?.id}/albums`)
-
-      albumsRef.on('value', album => {
-        const databaseAlbum: FirebaseAlbum = album.val();
-
-        const parsedAlbum = Object.entries(databaseAlbum).map(([key, value]) => {
-          return {
-            id: value.id,
-            name: value.name,
-            artistName: value.artistName,
-            image: value.image,
-            rating: value.rating,
-          }
+      const albumsRef = database.ref(`libs/${user?.id}/albums`).orderByChild('rating')
+      let parsedAlbum: Album[] = [];
+      albumsRef.on('value', snapshot => {
+        snapshot.forEach(album => {
+          parsedAlbum = [...parsedAlbum, {
+            artistName: album.val().artistName,
+            id: album.val().id,
+            image: album.val().image,
+            name: album.val().name,
+            rating: album.val().rating,
+          }]
         });
-        console.log(parsedAlbum)
+
+        parsedAlbum.reverse();
+
         setAlbums(parsedAlbum);
       });
     }
@@ -112,24 +112,27 @@ export default function Library() {
     setTypeSelected('track');
 
     if (user) {
-      const tracksRef = database.ref(`libs/${user?.id}/tracks`);
+      const tracksRef = database.ref(`libs/${user?.id}/tracks`).orderByChild('rating');
 
-      tracksRef.on('value', track => {
-        const databaseTrack: FirebaseTrack = track.val();
+      let parsedTracks: Track[] = [];
 
-        const parsedTrack = Object.entries(databaseTrack).map(([key, value]) => {
-          return {
-            id: value.id,
-            title: value.name,
-            artistName: value.artistName,
-            albumName: value.albumName,
-            url: value.previewUrl,
-            image: value.image,
+      tracksRef.on('value', snapshot => {
+        snapshot.forEach(track => {
+          parsedTracks = [...parsedTracks, {
+            id: track.val().id,
+            albumName: track.val().albumName,
+            artistName: track.val().artistName,
             duration: 30,
-            rating: value.rating,
-          }
+            image: track.val().image,
+            rating: track.val().rating,
+            title: track.val().name,
+            url: track.val().previewUrl,
+          }];
         });
-        setTracks(parsedTrack);
+
+        parsedTracks.reverse();
+
+        setTracks(parsedTracks);
       });
     }
   }
@@ -138,23 +141,26 @@ export default function Library() {
     let mounted = true;
 
     if (user) {
-      const artistsRef = database.ref(`libs/${user?.id}/artists`);
+      const artistsRef = database.ref(`libs/${user?.id}/artists`).orderByChild('rating');
+      let parsedArtist: Artist[] = [];
 
-      artistsRef.on('value', artist => {
-        const databaseArtist: FirebaseArtist = artist.val();
-
-        const parsedArtist = Object.entries(databaseArtist).map(([key, value]) => {
-          return {
-            id: value.id,
-            name: value.name,
-            type: value.type,
-            image: value.image,
-            rating: value.rating,
-          }
+      artistsRef.on('value', snapshot => {
+        snapshot.forEach(artist => {
+          parsedArtist = [...parsedArtist, {
+            id: artist.val().id,
+            image: artist.val().image,
+            name: artist.val().name,
+            rating: artist.val().rating,
+            type: artist.val().type,
+          }];
         });
+
+        parsedArtist.reverse();
+
         setArtists(parsedArtist);
       });
     }
+
     return () => { mounted = false }
   }, [user?.id]);
 

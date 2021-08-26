@@ -229,7 +229,7 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
             albumName: track.albumName,
             image: track.image,
             previewUrl: track.url,
-            rating: 0,
+            rating: ratingValue,
             userId: user?.id,
           });
         }

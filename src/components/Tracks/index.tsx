@@ -53,7 +53,7 @@ export function Tracks({ artistTracks, listType }: TracksProps) {
     if (!inView) {
       controls.start('initial');
     }
-  }, [controls, inView, showingAllTracks]);
+  }, [controls, inView, showingAllTracks, tracks]);
 
   return (
     <motion.div
