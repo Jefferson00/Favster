@@ -70,13 +70,13 @@ export function Player() {
     }, [isPlaying]);
 
     useEffect(() => {
-        if (isPlaying) {
+        if (isPlaying && !loading) {
             controls.start('animate');
         }
-        if (!isPlaying) {
+        if (!isPlaying || loading) {
             controls.start('initial')
         }
-    }, [controls, isPlaying]);
+    }, [controls, isPlaying, loading]);
 
     function setupProgressListener() {
         setLoading(false);
