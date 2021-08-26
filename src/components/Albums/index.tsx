@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 import { fadeInUp, stagger } from "../../styles/animations";
@@ -8,6 +9,8 @@ import { useInView } from "react-intersection-observer";
 import { motion, useAnimation } from "framer-motion";
 import { Rating } from "../Rating";
 import { Loading } from "../Loading";
+import { database } from "../../services/firebase";
+import { useAuth } from "../../contexts/AuthContext";
 
 type Album = {
   id: string;
@@ -29,8 +32,9 @@ interface AlbumsProps {
 export function Albums({ albumList, listType, loading, onItemSelected }: AlbumsProps) {
   const controls = useAnimation();
   const { ref, inView } = useInView();
-  const [showingAllAlbums, setShowingAllAlbums] = useState(false);
+  const { user } = useAuth();
 
+  const [showingAllAlbums, setShowingAllAlbums] = useState(false);
   const [albums, setAlbums] = useState<Album[]>([]);
 
   useEffect(() => {
@@ -41,6 +45,29 @@ export function Albums({ albumList, listType, loading, onItemSelected }: AlbumsP
     }
   }, [albumList, showingAllAlbums]);
 
+  /**
+   * Change de rating value for an favorite album
+   * @param album : Album
+   * @param value : number
+   */
+  async function handleChangeRating(album: Album, value: number, index: number) {
+    const id = album.id.replace('.', '');
+
+    const albumRef = database.ref(`libs/${user?.id}/albums/${id}`);
+
+    setAlbums([...albums].map((album, idx) => {
+      if (idx === index) {
+        return {
+          ...album,
+          rating: value
+        }
+      } else {
+        return album;
+      }
+    }));
+
+    await albumRef.update({ 'rating': value });
+  }
 
   function toggleShowAllAlbums() {
     setShowingAllAlbums(!showingAllAlbums);
@@ -73,7 +100,7 @@ export function Albums({ albumList, listType, loading, onItemSelected }: AlbumsP
         <h2>Álbuns</h2>
       }
       <div className={styles.albumsList}>
-        {albums.map(album => {
+        {albums.map((album, index) => {
           return (
             <motion.div
               variants={fadeInUp}
@@ -83,23 +110,31 @@ export function Albums({ albumList, listType, loading, onItemSelected }: AlbumsP
               {listType === 'library' &&
                 <Rating
                   value={album.rating}
+                  onChange={(value) => handleChangeRating(album, value, index)}
                 />
               }
 
               <Link href={`/albums/${album.id}`}>
                 <a onClick={onItemSelected}>
                   {album.image ?
-                    <motion.img
-                      src={album.image}
-                      alt={album.name}
+                    <motion.div
                       whileHover={{ y: -5 }}
                       whileTap={{ scale: 0.95 }}
-                    />
+                    >
+                      <Image
+                        src={album.image}
+                        objectFit="cover"
+                        width={138}
+                        height={138}
+                        placeholder="blur"
+                        blurDataURL={album.image}
+                      />
+                    </motion.div>
                     :
                     <motion.img
                       whileHover={{ y: -5 }}
                       whileTap={{ scale: 0.95 }}
-                      src="default.png"
+                      src="default-album.svg"
                       alt={album.name}
                     />
                   }
