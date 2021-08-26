@@ -1,5 +1,5 @@
 import Head from 'next/head';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Albums } from '../../components/Albums';
 import { Artists } from '../../components/Artists';
 import { Header } from '../../components/Header';
@@ -78,19 +78,19 @@ export default function Library() {
 
   const [loading, setLoading] = useState(false);
 
-  function onAlbumItemSelected() {
+  function onItemSelected() {
     setLoading(true);
 
     containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  async function handleSelectAlbum() {
+  const handleSelectAlbum = useCallback(async () => {
     setTypeSelected('album');
 
     if (user) {
       const albumsRef = database.ref(`libs/${user?.id}/albums`).orderByChild('rating')
       let parsedAlbum: Album[] = [];
-      albumsRef.on('value', snapshot => {
+      await albumsRef.once('value', snapshot => {
         snapshot.forEach(album => {
           parsedAlbum = [...parsedAlbum, {
             artistName: album.val().artistName,
@@ -98,21 +98,21 @@ export default function Library() {
             image: album.val().image,
             name: album.val().name,
             rating: album.val().rating,
-          }]
+          }];
         });
-
-        parsedAlbum.reverse();
-
-        setAlbums(parsedAlbum);
       });
-    }
-  }
 
-  async function handleSelectTracks() {
+      parsedAlbum.reverse();
+
+      setAlbums(parsedAlbum);
+    }
+  }, [user]);
+
+  const handleSelectTracks = useCallback(async () => {
     setTypeSelected('track');
 
     if (user) {
-      const tracksRef = database.ref(`libs/${user?.id}/tracks`).orderByChild('rating');
+      const tracksRef = database.ref(`libs/${user?.id}/tracks`).orderByChild('artistName');
 
       let parsedTracks: Track[] = [];
 
@@ -130,21 +130,19 @@ export default function Library() {
           }];
         });
 
-        parsedTracks.reverse();
+        //parsedTracks.reverse();
 
         setTracks(parsedTracks);
       });
     }
-  }
+  }, [user])
 
-  useEffect(() => {
-    let mounted = true;
-
+  const handleSelectArtist = useCallback(async () => {
     if (user) {
       const artistsRef = database.ref(`libs/${user?.id}/artists`).orderByChild('rating');
       let parsedArtist: Artist[] = [];
 
-      artistsRef.on('value', snapshot => {
+      artistsRef.once('value', snapshot => {
         snapshot.forEach(artist => {
           parsedArtist = [...parsedArtist, {
             id: artist.val().id,
@@ -160,6 +158,12 @@ export default function Library() {
         setArtists(parsedArtist);
       });
     }
+  }, [user]);
+
+  useEffect(() => {
+    let mounted = true;
+
+    handleSelectArtist();
 
     return () => { mounted = false }
   }, [user?.id]);
@@ -181,7 +185,10 @@ export default function Library() {
                   color:
                     typeSelected === 'artist' ? '#FF6400' : '#808080'
                 }}
-                onClick={() => setTypeSelected('artist')}
+                onClick={() => {
+                  setTypeSelected('artist');
+                  handleSelectArtist();
+                }}
               >
                 Artistas
               </button>
@@ -209,13 +216,18 @@ export default function Library() {
 
             <main>
               {typeSelected === 'artist' &&
-                <Artists artistsList={artists} listType="favorites" />
+                <Artists
+                  artistsList={artists}
+                  listType="library"
+                  onItemSelected={onItemSelected}
+                  loading={loading}
+                />
               }
               {typeSelected === 'album' &&
                 <Albums
                   albumList={albums}
                   loading={loading}
-                  onItemSelected={onAlbumItemSelected}
+                  onItemSelected={onItemSelected}
                   listType="library"
                 />
               }
