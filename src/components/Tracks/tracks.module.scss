@@ -15,9 +15,13 @@
         margin-bottom: 1rem;
         width: 8.625rem;
         position: relative;
+        margin-top: 0.5rem;
 
         img{
-          width: inherit;
+          width: 8.625rem;
+          height: 8.625rem;
+          object-fit: cover;
+          border-radius: 10px;
         }
 
         .playButton{
