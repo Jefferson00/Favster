@@ -1,0 +1,96 @@
+.notes{
+
+  :nth-child(1){
+    animation: dancing 2s ease-in-out both infinite;
+  }
+  :nth-child(2){
+    animation: dancing 1.5s ease-in-out both infinite;
+  }
+  :nth-child(3){
+    animation: dancing 2s ease-in-out both infinite;
+  }
+  :nth-child(4){
+    animation: dancing 1.5s ease-in-out both infinite;
+  }
+  :nth-child(5){
+    animation: dancing 2s ease-in-out both infinite;
+  }
+  :nth-child(6){
+    animation: dancing 1.5s ease-in-out both infinite;
+  }
+  :nth-child(7){
+    animation: dancing 2s ease-in-out both infinite;
+  }
+  :nth-child(8){
+    animation: dancing 1.5s ease-in-out both infinite;
+  }
+  :nth-child(9){
+    animation: dancing 2s ease-in-out both infinite;
+  }
+}
+
+.manHead{
+  animation: movingUp 0.3s ease-in-out infinite alternate;
+}
+
+.womanHead{
+  animation: movingFront 0.3s ease-in-out infinite alternate;
+}
+
+.womanArm{
+  animation: movingFront 0.5s ease-in-out infinite alternate;
+}
+
+.manLeftArm{
+  animation: moving 1s ease-in-out infinite alternate;
+}
+
+.manRightArm{
+  animation: moving 1s ease-in-out infinite alternate;
+}
+
+.manLag{
+  animation: movingFront 1s ease-in-out infinite alternate;
+}
+
+@keyframes dancing{
+  0% {
+    -webkit-transform: translateY(15px);
+    opacity: 1;
+  }
+  50% {
+    -webkit-transform: translateY(0);
+    opacity: 0.3;
+  }
+  100% {
+    -webkit-transform: translateY(15px);
+    opacity: 1;
+  }
+}
+
+@keyframes movingUp{
+  from {
+      transform: translate(0, 0);
+  }
+  to{
+      transform: translate(-5px, 3px) ;
+  }
+}
+
+@keyframes movingFront{
+  from {
+      transform: translateX(0);
+  }
+  to{
+      transform: translateX(-4px) ;
+  }
+}
+
+@keyframes moving{
+  from {
+      transform: translateX(0);
+  }
+  to{
+      transform: translateX(6px) ;
+  }
+}

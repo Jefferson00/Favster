@@ -14,6 +14,7 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import Lottie from 'react-lottie';
 import animationData from '../assets/animations/loading.json';
+import { HomeAnimation } from '../assets/animations/Home';
 
 //TODO responsividade, PWA, dark theme
 
@@ -84,13 +85,13 @@ export default function Home() {
                     >
                       <h3>Encontre seus artistas, álbuns e músicas preferidos </h3>
                     </motion.div>
-                    <motion.img
+                    <motion.div
                       initial={{ y: 60, opacity: 0 }}
                       animate={{ y: 0, opacity: 1 }}
                       transition={{ delay: 0.5 }}
-                      src="illustration-home.svg"
-                      alt="home"
-                    />
+                    >
+                      <HomeAnimation />
+                    </motion.div>
                   </>
                   :
                   <>

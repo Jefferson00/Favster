@@ -106,27 +106,31 @@ export default function Artists({ artist, slug, data }: ArtistProps) {
     async function getAlbumsData() {
         let albums: Album[] = [];
 
-        let albumsAPIResponse = await api.get(`${data.artists[0].links.albums.href}/top?apikey=${API_KEY}`);
+        try {
+            let albumsAPIResponse = await api.get(`${data.artists[0].links.albums.href}/top?apikey=${API_KEY}`);
 
-        const albumsMapPromises = albumsAPIResponse.data.albums.map(async (album: any) => {
-            let { data } = await api.get(`${album.links.images.href}?apikey=${API_KEY}`);
+            const albumsMapPromises = albumsAPIResponse.data.albums.map(async (album: any) => {
+                let { data } = await api.get(`${album.links.images.href}?apikey=${API_KEY}`);
 
-            let imageUrl = null;
-            if (data.images.length > 0) {
-                imageUrl = data.images[0].url
-            }
+                let imageUrl = null;
+                if (data.images.length > 0) {
+                    imageUrl = data.images[0].url
+                }
 
-            albums.push({
-                id: album.id,
-                name: album.name,
-                releasedDate: album.originallyReleased,
-                copyright: album.copyright,
-                artistName: album.artistName,
-                image: imageUrl,
+                albums.push({
+                    id: album.id,
+                    name: album.name,
+                    releasedDate: album.originallyReleased,
+                    copyright: album.copyright,
+                    artistName: album.artistName,
+                    image: imageUrl,
+                });
             });
-        });
 
-        await Promise.all(albumsMapPromises);
+            await Promise.all(albumsMapPromises);
+        } catch (error) {
+            console.log(error)
+        }
 
         return albums;
     }
@@ -138,29 +142,33 @@ export default function Artists({ artist, slug, data }: ArtistProps) {
     async function getTracksData() {
         let topTracks: Track[] = [];
 
-        let topTracksAPIResponse = await api.get(`/artists/${slug}/tracks/top?apikey=${API_KEY}`);
+        try {
+            let topTracksAPIResponse = await api.get(`/artists/${slug}/tracks/top?apikey=${API_KEY}`);
 
-        const topTracksMapPromises = topTracksAPIResponse.data.tracks.map(async (track: any) => {
-            let albumsResponse = await api.get(`${track.links.albums.href}?apikey=${API_KEY}`);
-            let albumImagesLink = albumsResponse.data.albums[0].links.images.href;
-            let { data } = await api.get(`${albumImagesLink}?apikey=${API_KEY}`);
-            let imageURL = null;
-            if (data.images.length > 0) {
-                imageURL = data.images[3].url
-            }
+            const topTracksMapPromises = topTracksAPIResponse.data.tracks.map(async (track: any) => {
+                let albumsResponse = await api.get(`${track.links.albums.href}?apikey=${API_KEY}`);
+                let albumImagesLink = albumsResponse.data.albums[0].links.images.href;
+                let { data } = await api.get(`${albumImagesLink}?apikey=${API_KEY}`);
+                let imageURL = null;
+                if (data.images.length > 0) {
+                    imageURL = data.images[3].url
+                }
 
-            topTracks.push({
-                id: track.id,
-                image: imageURL,
-                title: track.name,
-                url: track.previewURL,
-                albumName: track.albumName,
-                artistName: track.artistName,
-                duration: track.playbackSeconds,
+                topTracks.push({
+                    id: track.id,
+                    image: imageURL,
+                    title: track.name,
+                    url: track.previewURL,
+                    albumName: track.albumName,
+                    artistName: track.artistName,
+                    duration: track.playbackSeconds,
+                });
             });
-        });
 
-        await Promise.all(topTracksMapPromises);
+            await Promise.all(topTracksMapPromises);
+        } catch (error) {
+            console.log(error);
+        }
 
         return topTracks;
     }
@@ -171,17 +179,21 @@ export default function Artists({ artist, slug, data }: ArtistProps) {
      */
     async function getGenreData() {
         let genres: Genre[] = [];
-        let genresAPIResponse = await api.get(`${data.artists[0].links.genres.href}?apikey=${API_KEY}`);
+        try {
+            let genresAPIResponse = await api.get(`${data.artists[0].links.genres.href}?apikey=${API_KEY}`);
 
-        const genresMapPromises = genresAPIResponse.data.genres.map(async (genre: any) => {
-            genres.push({
-                id: genre.id,
-                description: genre.description,
-                name: genre.name,
-            })
-        });
+            const genresMapPromises = genresAPIResponse.data.genres.map(async (genre: any) => {
+                genres.push({
+                    id: genre.id,
+                    description: genre.description,
+                    name: genre.name,
+                })
+            });
 
-        await Promise.all(genresMapPromises);
+            await Promise.all(genresMapPromises);
+        } catch (error) {
+            console.log(error)
+        }
 
         return genres;
     }
@@ -428,9 +440,13 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
     }
 
     let image = null;
+
     if (images.data.images[3]) {
         image = images.data.images[3].url
+    } else if (images.data.images[0]) {
+        image = images.data.images[0].url
     }
+
 
     const artist = {
         id: data.artists[0].id,
