@@ -3,6 +3,7 @@ import { GetServerSideProps } from 'next';
 import { useAuth } from '../../contexts/AuthContext';
 import styles from './login.module.scss';
 import { parseCookies } from 'nookies';
+import { LoginAnimation } from '../../assets/animations/Login';
 
 export default function Login() {
   const { user, signInWithGoogle } = useAuth();
@@ -21,8 +22,8 @@ export default function Login() {
             <title>Login | Musifavs</title>
           </Head>
           <section className={styles.main}>
-            <img src="/illustration-login.svg" alt="music" />
-
+            {/*<img src="/illustration-login.svg" alt="music" />*/}
+            <LoginAnimation />
             <div className={styles.text}>
               <p>Seus artistas preferidos</p>
               <span>Do seu jeito</span>

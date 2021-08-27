@@ -1,0 +1,72 @@
+.note1, .note2{
+  animation: dancing 2s ease-in-out infinite alternate;
+  transform-origin: bottom;
+}
+
+.woman2Arm{
+  animation: toLeft 1s ease-in-out infinite alternate;
+  transform-origin: bottom;
+}
+
+.woman1{
+  animation: toLeft 2s ease-in-out infinite alternate;
+  transform-origin: bottom;
+}
+
+.man{
+  animation: jump 1s ease-in-out infinite alternate;
+    transform-origin: bottom;
+  .manUp{
+    animation: jump 1s ease-in-out infinite alternate;
+    transform-origin: bottom;
+  }
+}
+
+@keyframes updown{
+  from {
+      transform: rotateX(0);
+  }
+  to{
+      transform: rotateX(40deg) ;
+  }
+}
+@keyframes updownVariant{
+  from {
+      transform: rotateX(0);
+  }
+  to{
+      transform: rotateX(40deg) ;
+  }
+}
+@keyframes rightLeft{
+  from {
+      transform: rotateY(0);
+  }
+  to{
+      transform: rotateY(60deg) ;
+  }
+}
+@keyframes toLeft{
+  from {
+      transform: translateX(0);
+  }
+  to{
+      transform: translateX(-8px) ;
+  }
+}
+@keyframes jump{
+  from {
+      transform: translateY(0);
+  }
+  to{
+      transform: translateY(8px) ;
+  }
+}
+@keyframes dancing{
+  from {
+      transform: rotateZ(0) scale(1);
+  }
+  to{
+      transform: rotateZ(3deg) scale(0.9);
+  }
+}

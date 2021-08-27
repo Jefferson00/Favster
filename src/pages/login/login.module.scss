@@ -12,6 +12,10 @@
   padding-left: 5.93rem;
   padding-top: 4.125rem;
 
+  svg{
+    height: 27.5rem;
+  }
+
   img{
     height: 27.5rem;
   }
@@ -57,5 +61,12 @@
     justify-content: center;
     align-items: center;
     gap: 0.5rem;
+
+    transition: all 0.4s;
+
+    &:hover{
+      filter: brightness(0.9);
+      background: #eeeeee;
+    }
   }
 }
