@@ -59,6 +59,7 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
             setNextItem(nextItem + 1);
             setPrevItem(1);
         }
+        console.log(itemRef.current)
     }
 
     function handlePrevItem() {
@@ -165,7 +166,7 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
         if (!inView) {
             controls.start('initial');
         }
-    }, [controls, inView]);
+    }, [controls, inView, data]);
 
     return (
         <motion.div

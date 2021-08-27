@@ -49,18 +49,24 @@ export function SearchContextProvider({ children }: SearchContextProviderProps) 
     if (API_KEY && searchContent && searchContent.trim().length > 0) {
       try {
         const result = await api.get(`search?apikey=${API_KEY}&query=${searchContent}&per_type_limit=10`);
-
+        setSearchLoading(false);
         const artistsReturned = await searchArtists(result);
         setArtists(artistsReturned);
+
         const albumsReturned = await searchAlbum(result);
         setAlbums(albumsReturned);
+
         const tracksReturned = await searchTracks(result);
         setTracks(tracksReturned);
       } catch (error) {
+        setSearchLoading(false);
         alert('Não foi possível retornar o resultado da pesquisa, tente novamente.')
       }
     } else {
+      setSearchLoading(false);
       setArtists([]);
+      setAlbums([]);
+      setTracks([]);
     }
   }
 
@@ -102,8 +108,13 @@ export function SearchContextProvider({ children }: SearchContextProviderProps) 
       const artistMapPromises = artistsArray.map(async (artist: any) => {
         let { data } = await api.get(`${artist.links.images.href}?apikey=${API_KEY}`);
         let imageURL = null;
+
         if (data.images.length > 0) {
-          imageURL = data.images[3].url
+          if (data.images[3]) {
+            imageURL = data.images[3].url
+          } else {
+            imageURL = data.images[0].url
+          }
         }
 
         artistsReturned.push({
@@ -160,10 +171,8 @@ export function SearchContextProvider({ children }: SearchContextProviderProps) 
     setSearchLoading(true);
 
     const timer = setTimeout(() => {
-      searchAll(searchContent).finally(() => {
-        setSearchLoading(false)
-      });
-    }, 500);
+      searchAll(searchContent)
+    }, 600);
     return () => clearTimeout(timer);
   }, [searchContent]);
 
