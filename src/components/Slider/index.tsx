@@ -44,10 +44,11 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
     const { ref, inView } = useInView();
 
     const listRef = useRef<HTMLDivElement>(null);
-    const itemRef = useRef<HTMLDivElement>(null);
+    const itemRef = useRef<HTMLDivElement[]>([]);
 
     const [nextItem, setNextItem] = useState(0);
     const [prevItem, setPrevItem] = useState(0);
+    const [maxItemOnScreen, setMaxItemOnScreen] = useState(0);
     const [isItemClicked, setIsItemClicked] = useState(false);
 
     const [isResultsSmallerThanList, setIsResultsSmallerThanList] = useState(true);
@@ -58,14 +59,17 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
         if ((nextItem + 1) < data.length) {
             setNextItem(nextItem + 1);
             setPrevItem(1);
+
+            itemRef.current[nextItem + 1].scrollIntoView({ behavior: 'smooth' });
         }
-        console.log(itemRef.current)
     }
 
     function handlePrevItem() {
         if ((prevItem - 1) >= 0) {
             setPrevItem(prevItem - 1);
-            setNextItem(nextItem - 1);
+            setNextItem(maxItemOnScreen);
+
+            itemRef.current[prevItem - 1].scrollIntoView({ behavior: 'smooth' });
         }
     }
 
@@ -130,9 +134,11 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
     }
 
     useEffect(() => {
-        if (listRef.current && itemRef.current) {
-            setPrevItem(data.length);
-            let maxItensOnScreen = Math.floor(listRef.current.offsetWidth / itemRef.current.offsetWidth);
+        if (listRef.current && itemRef.current[0]) {
+            setPrevItem(0);
+            let maxItensOnScreen = Math.floor(listRef.current.offsetWidth / itemRef.current[0].offsetWidth);
+
+            setMaxItemOnScreen(maxItensOnScreen);
 
             if ((data.length - 1) > maxItensOnScreen) {
                 setNextItem(maxItensOnScreen);
@@ -184,7 +190,7 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
                 <motion.a
                     initial={{ x: '-50%', y: '-50%' }}
                     whileHover={{ x: '-60%' }}
-                    href={`#${prevItem}-${data[0].type}`}
+                    //href={`#${prevItem}-${data[0].type}`}
                     className={styles.arrowButton}
                     onClick={handlePrevItem}>
                     ‹ {/*Change for SVG Icon*/}
@@ -204,7 +210,7 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
                             <div
                                 className={styles.listItem}
                                 id={index.toString() + "-" + item.type}
-                                ref={itemRef}
+                                ref={(ref) => !itemRef.current.includes(ref) && itemRef.current.push(ref)}
                             >
                                 {/*function that return a JSX element based on type of the item*/}
                                 {setItemList(item, index)}
@@ -223,7 +229,7 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
                 <motion.a
                     initial={{ x: '50%', y: '-50%' }}
                     whileHover={{ x: '60%' }}
-                    href={`#${nextItem}-${data[0].type}`}
+                    //href={`#${nextItem}-${data[0].type}`}
                     className={styles.arrowButton}
                     onClick={handleNextItem}>
                     ›
