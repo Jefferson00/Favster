@@ -47,12 +47,15 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
   const [ratingValue, setRatingValue] = useState(0);
 
   const [loading, setLoading] = useState(false);
+  const [loadingTracks, setLoadingTracks] = useState(false);
 
   /**
   * Add loading and scroll page to top
   */
   function onAlbumItemSelected() {
     setLoading(true);
+    setLoadingTracks(true);
+    setTracks([]);
 
     containerRef.current.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -73,7 +76,9 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
 
     if (artistId) {
       const artistAlbumsReturned = await getArtistAlbumsData();
-      setArtistAlbums(artistAlbumsReturned);
+      const artistAlbumsWithoutSelectedALbum = artistAlbumsReturned
+        .filter(artistAlbum => artistAlbum.id !== album.id);
+      setArtistAlbums(artistAlbumsWithoutSelectedALbum);
     }
   }
 
@@ -146,22 +151,28 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
   async function getTracksData() {
     let tracks: TrackProps[] = [];
 
-    let tracksAPIResponse = await api.get(`/albums/${slug}/tracks?apikey=${API_KEY}`);
+    try {
+      let tracksAPIResponse = await api.get(`/albums/${slug}/tracks?apikey=${API_KEY}`);
 
-    const tracksMapPromises = tracksAPIResponse.data.tracks.map(async (track: any) => {
-      tracks.push({
-        id: track.id,
-        image: album.image,
-        title: track.name,
-        url: track.previewURL,
-        albumName: track.albumName,
-        artistName: track.artistName,
-        duration: track.playbackSeconds,
-        isFavorite: false,
+      const tracksMapPromises = tracksAPIResponse.data.tracks.map(async (track: any) => {
+        tracks.push({
+          id: track.id,
+          image: album.image,
+          title: track.name,
+          url: track.previewURL,
+          albumName: track.albumName,
+          artistName: track.artistName,
+          duration: track.playbackSeconds,
+          isFavorite: false,
+        });
       });
-    });
 
-    await Promise.all(tracksMapPromises);
+      await Promise.all(tracksMapPromises);
+      setLoadingTracks(false);
+    } catch (error) {
+      alert('Não foi possível obter as músicas do álbum');
+      setLoadingTracks(false);
+    }
 
     return tracks;
   }
@@ -452,33 +463,35 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
                   animate='animate'
 
                 >
-                  {tracks.map((track, index) => {
-                    return (
-                      <motion.div variants={fadeInUp} key={track.id}>
-                        <button onClick={() => playList(tracks, index)}>
-                          {currentTrack === track.title ?
-                            <>
-                              <strong style={{ color: '#414141' }}>{index + 1}. </strong>
-                              <span style={{ color: '#414141' }}>{track.title}</span>
-                            </>
-                            :
-                            <>
-                              <strong>{index + 1}. </strong>
-                              <span>{track.title}</span>
-                            </>
-                          }
-                        </button>
+                  {loadingTracks ?
+                    <span>Carregando...</span>
+                    : tracks.map((track, index) => {
+                      return (
+                        <motion.div variants={fadeInUp} key={track.id}>
+                          <button onClick={() => playList(tracks, index)}>
+                            {currentTrack === track.title ?
+                              <>
+                                <strong style={{ color: '#414141' }}>{index + 1}. </strong>
+                                <span style={{ color: '#414141' }}>{track.title}</span>
+                              </>
+                              :
+                              <>
+                                <strong>{index + 1}. </strong>
+                                <span>{track.title}</span>
+                              </>
+                            }
+                          </button>
 
-                        <button onClick={() => toggleFavTracks(track, index)}>
-                          {track.isFavorite ?
-                            <img src="/star-selected.svg" alt="favoritar" />
-                            :
-                            <img src="/star.svg" alt="favoritar" />
-                          }
-                        </button>
-                      </motion.div>
-                    )
-                  })}
+                          <button onClick={() => toggleFavTracks(track, index)}>
+                            {track.isFavorite ?
+                              <img src="/star-selected.svg" alt="favoritar" />
+                              :
+                              <img src="/star.svg" alt="favoritar" />
+                            }
+                          </button>
+                        </motion.div>
+                      )
+                    })}
                 </motion.div>
                 <p>
                   &copy; {album.copyright}
