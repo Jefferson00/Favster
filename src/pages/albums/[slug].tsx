@@ -21,8 +21,28 @@ import { database } from "../../services/firebase";
 import { useAuth } from "../../contexts/AuthContext";
 import { Rating } from "../../components/Rating";
 
-import { TrackProps, AlbumsProps } from "./interfaces"
 import { useRouter } from "next/router";
+
+type TrackProps = {
+  id: string;
+  title: string;
+  artistName: string;
+  albumName: string;
+  image: string;
+  duration: number;
+  url: string;
+  isFavorite: boolean;
+}
+
+type AlbumsProps = {
+  id: string;
+  name: string;
+  releasedDate: Date;
+  copyright: string;
+  artistName: string;
+  image: string | null;
+}
+
 
 type AlbumProps = {
   album: AlbumsProps,
