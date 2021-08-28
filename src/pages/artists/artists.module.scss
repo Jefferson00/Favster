@@ -156,3 +156,42 @@
     }
   }
 }
+
+@media(max-width: 720px){
+  .container{
+    .artistBackgroundImage{
+      height: 7rem;
+    }
+  }
+  .artist {
+    padding: 3rem 2rem;
+    margin-bottom: 8rem;
+
+    .thumbnailContainer{
+      .favstarContainer{
+        button{
+          width: 1.5rem;
+          height: 1.5rem;
+        }
+      }
+
+      .sideButton {
+        width: 2rem;
+        height: 2rem;
+        font-size: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        img{
+          max-width: 90%;
+          max-height: 90%;
+        }
+      }
+    }
+
+    header{
+      text-align: center;
+    }
+  }
+}
