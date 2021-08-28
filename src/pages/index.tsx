@@ -15,6 +15,7 @@ import Link from 'next/link';
 import Lottie from 'react-lottie';
 import animationData from '../assets/animations/loading.json';
 import { HomeAnimation } from '../assets/animations/Home';
+import { useTheme } from 'next-themes';
 
 //TODO responsividade, PWA, dark theme
 
@@ -28,6 +29,8 @@ export default function Home() {
     searchContent,
   } = useSearch();
 
+  const { theme, setTheme } = useTheme();
+
   return (
     <div className={styles.wrapper}>
       <main>
@@ -35,7 +38,7 @@ export default function Home() {
 
         <div className={styles.homeContainer}>
           <Head>
-            <title>Home | Musifavs</title>
+            <title>Home | Favster</title>
           </Head>
 
           <section className={styles.homeContent}>

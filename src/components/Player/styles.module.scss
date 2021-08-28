@@ -3,7 +3,7 @@
     width: 26.5rem;
     height: 100vh;
   
-    background: var(--orange-400);
+    background: var(--player-background);
     color: var(--white);
   
     display: flex;
@@ -80,7 +80,7 @@
     height: 20rem;
     border: 1.5px dashed var(--orange-600);
     border-radius: 1.5rem;
-    background: linear-gradient(143.8deg, rgba(255, 228, 176, 0.8) 0%, rgba(0,0,0,0) 100%);
+    background: linear-gradient(143.8deg, var(--empty-player) 0%, rgba(0,0,0,0) 100%);
   
     padding: 4rem;
     text-align: center;

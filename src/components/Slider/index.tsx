@@ -74,7 +74,7 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
     }
 
     function setItemList(item: DataProps, index: number) {
-        let imageSource = 'default.png';
+        let imageSource = 'default-artist.svg';
         let routeName = '';
 
         if (item.image) {

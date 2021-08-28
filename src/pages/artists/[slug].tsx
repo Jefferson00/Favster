@@ -282,7 +282,7 @@ export default function Artists({ artist, slug, data }: ArtistProps) {
                 <Header />
                 <div className={styles.container} ref={containerRef}>
                     <Head>
-                        <title>{artist.name} | Musifavs</title>
+                        <title>{artist.name} | Favster</title>
                     </Head>
 
                     <motion.div

@@ -19,7 +19,7 @@ export default function Login() {
       <main>
         <div className={styles.container}>
           <Head>
-            <title>Login | Musifavs</title>
+            <title>Login | Favster</title>
           </Head>
           <section className={styles.main}>
             {/*<img src="/illustration-login.svg" alt="music" />*/}
@@ -33,7 +33,7 @@ export default function Login() {
       </main>
 
       <section className={styles.loginContainer}>
-        <img src="/logo.svg" alt="Musifavs" />
+        <img src="/logo-light-theme.svg" alt="Favster" />
 
         <button onClick={handleLogin}>
           <img src="/google.svg" alt="google" />

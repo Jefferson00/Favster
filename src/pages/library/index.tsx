@@ -175,7 +175,7 @@ export default function Library() {
 
         <div className={styles.container} ref={containerRef}>
           <Head>
-            <title>Home | Musifavs</title>
+            <title>Biblioteca | Favster</title>
           </Head>
 
           <section className={styles.content}>

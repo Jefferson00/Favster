@@ -56,9 +56,18 @@
         height: 1.5rem;
         width: 100%;
         outline: none;
-        padding: 0 1rem;
-        color: var(--gray-800);
+        padding: 1rem;
+        color: var(--primary-text);
         font-size: 1.125rem;
+
+        &:-webkit-autofill,
+        &:-webkit-autofill:hover,
+        &:-webkit-autofill:focus,
+        &:-webkit-autofill:active
+          {
+            transition: background-color 5000s;
+            -webkit-text-fill-color: #fff !important;
+        }
       }
     }
 
@@ -73,7 +82,7 @@
   main{
     .loadingContainer{
       width: 100%;
-      background: var(--gray-50);
+      background: var(--body-background);
       height: 100%;
       display: flex;
       justify-content: center;

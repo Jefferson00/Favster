@@ -2,6 +2,7 @@ import { destroyCookie, setCookie } from 'nookies';
 import { useEffect, useState, createContext, ReactNode, useContext } from 'react';
 import { auth, firebase } from '../services/firebase';
 import { useRouter } from 'next/router';
+import { useTheme } from 'next-themes';
 
 type User = {
   id: string;
@@ -24,6 +25,7 @@ export const AuthContext = createContext({} as AuthContextType);
 export function AuthProvider(props: AuthProviderProps) {
   const [user, setUser] = useState<User>();
   const router = useRouter();
+  const { setTheme } = useTheme();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(async user => {
@@ -84,6 +86,8 @@ export function AuthProvider(props: AuthProviderProps) {
     });
 
     router.push('/login');
+
+    setTheme('light');
   }
 
 

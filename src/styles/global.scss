@@ -6,6 +6,14 @@
 
 :root {
     --white: #FFF;
+    --header-background: #ffffff;
+    --body-background:#F7F8FA;
+    --player-background: #FFA800;
+    --button-theme: #494D4B;
+
+    --primary-text: #494D4B;
+    --secondary-text: #808080;
+    --empty-player: rgba(255, 228, 176, 0.8);
   
     --gray-50: #F7F8FA;
     --gray-100: #E6E8EB;
@@ -21,20 +29,51 @@
     --orange-600:#FF6400;
   }
 
+  [data-theme='dark']{
+    --white: #f7f7f7;
+    --body-background: #121212;
+    --header-background: #2f3130;
+    --player-background: #242424;
+    --empty-player: rgba(92, 90, 86, 0.8);
+    --button-theme: #cc9833;
+
+    --gray-100: #494D4B;
+    --gray-200: #494D4B;
+
+    --primary-text: #E6E8EB;
+    --secondary-text: #AFB2B1;
+
+    --green-500: #2daa65;
+    --orange-400: #cc9833;
+    --orange-500: #dda777;
+    --orange-600:#cc6f33;
+  }
+
+  /*
+    dark-theme colors
+    --dark-gray-800: #121212;
+    --dark-gray-600: #2f3130;
+
+    --green-500: #2daa65;
+    --orange-400: #cc9833;
+    --orange-500: #dda777;
+    --orange-600:#cc6f33;
+  */
+
   body{
-      background: var(--gray-50);
+      background: var(--body-background);
   }
 
   body, input, textarea, button{
       font: 500 1rem Inter, sans-serif;
-      color: var(--gray-500);
+      color: var(--secondary-text);
   }
 
 
   h1, h2, h3, h4, h5, h6{
       font-weight: 600;
       font-family: Lexend, sans-serif;
-      color: var(--gray-800);
+      color: var(--primary-text);
   }
 
   h1{

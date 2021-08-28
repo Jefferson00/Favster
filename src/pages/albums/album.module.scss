@@ -57,7 +57,7 @@
     grid-template-columns: 1fr 1fr;
     background: linear-gradient(
       45deg
-      , #FFA800, #FF6400);
+      , var(--orange-400), var(--orange-600));
     border-radius: 10px;
     margin-bottom: 1rem;
     
@@ -168,7 +168,7 @@
         }
 
         &::-webkit-scrollbar-thumb{
-          background: #fff;
+          background: var(--white);
           border-radius: 5px;
           height: 5px;
         }
@@ -180,11 +180,11 @@
           padding: 0.5rem 0;
           margin-right: 0.5rem;
           strong{
-            color: #fff;
+            color: var(--white);
           }
 
           span{
-            color: #fff;
+            color:  var(--white);
           }
 
           button{
@@ -197,6 +197,7 @@
 
       }
       p{
+        color:var(--white);
         margin-top: 2rem;
         font-size: 0.8rem;
       }

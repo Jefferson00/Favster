@@ -1,10 +1,16 @@
 .headerContainer{
-    background: var(--white);
+    background: var(--header-background);
     height: 6.5rem;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 2rem 4rem;
     border-bottom: 1px solid var(--gray-100);
+
+    div{
+        display: flex;
+        align-items: center;
+    }
 
     img{
         height: 3.125rem;
@@ -27,10 +33,28 @@
         img{
             width: 100%;
             height: 100%;
+            
         }
 
         &:hover{
             filter: brightness(0.8);
+        }
+    }
+
+    .themeButton{
+        background-color: var(--button-theme);
+        border-radius: 50%;
+        width: 3rem;
+        height: 3rem;
+        font-size: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 2rem;
+
+        img{
+            width: 2rem;
+            height: 2rem;
         }
     }
 }

@@ -378,7 +378,7 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
         <Header />
         <div className={styles.container} ref={containerRef}>
           <Head>
-            <title>{album.name} | Musifavs</title>
+            <title>{album.name} | Favster</title>
           </Head>
           <motion.div
             className={styles.topBackgroundImage}
