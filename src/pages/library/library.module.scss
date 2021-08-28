@@ -54,6 +54,15 @@
       max-width: 53rem;
       padding: 3rem 0;
       margin: 0 auto;
+
+      .emptySpace{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 2rem;
+      }
     }
   }
 }
@@ -70,6 +79,14 @@
       margin-bottom: 8rem;
       .content{
         padding: 1.563rem 2rem;
+
+        main{
+          .emptySpace{
+            img{
+              height: 10rem;
+            }
+          }
+        }
       }
     }
   }

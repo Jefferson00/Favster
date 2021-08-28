@@ -215,24 +215,54 @@ export default function Library() {
             </header>
 
             <main>
-              {typeSelected === 'artist' &&
-                <Artists
-                  artistsList={artists}
-                  listType="library"
-                  onItemSelected={onItemSelected}
-                  loading={loading}
-                />
+              {typeSelected === 'artist' && (
+                artists.length > 0 ?
+                  <Artists
+                    artistsList={artists}
+                    listType="library"
+                    onItemSelected={onItemSelected}
+                    loading={loading}
+                  />
+                  :
+                  <div className={styles.emptySpace}>
+                    <h3>
+                      Você não possue nenhum
+                      artista favorito ainda.
+                    </h3>
+                    <img src="/empty-library.svg" alt="sem resultados" />
+                  </div>
+              )
               }
-              {typeSelected === 'album' &&
-                <Albums
-                  albumList={albums}
-                  loading={loading}
-                  onItemSelected={onItemSelected}
-                  listType="library"
-                />
+              {typeSelected === 'album' && (
+                albums.length > 0 ?
+                  <Albums
+                    albumList={albums}
+                    loading={loading}
+                    onItemSelected={onItemSelected}
+                    listType="library"
+                  />
+                  :
+                  <div className={styles.emptySpace}>
+                    <h3>
+                      Você não possue nenhum
+                      álbum favorito ainda.
+                    </h3>
+                    <img src="/empty-library.svg" alt="sem resultados" />
+                  </div>
+              )
               }
-              {typeSelected === 'track' &&
-                <Tracks artistTracks={tracks} listType="library" />
+              {typeSelected === 'track' && (
+                tracks.length > 0 ?
+                  <Tracks artistTracks={tracks} listType="library" />
+                  :
+                  <div className={styles.emptySpace}>
+                    <h3>
+                      Você não possue nenhuma
+                      música favorita ainda.
+                    </h3>
+                    <img src="/empty-library.svg" alt="sem resultados" />
+                  </div>
+              )
               }
             </main>
           </section>
