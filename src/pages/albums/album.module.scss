@@ -248,3 +248,38 @@
     }
   }
 }
+
+@media(max-width: 1090px){
+  .album{
+    padding: 3rem 2rem;
+    margin-bottom: 8rem;
+    .albumContainer{
+      grid-template-columns: 1fr;
+      grid-template-rows: 1fr 1fr;
+      width: 27rem;
+      margin: 1rem auto;
+    }
+  }
+}
+
+@media(max-width: 720px){
+  .album{
+    .albumContainer{
+      width: 20rem;
+
+      .imageContainer, .tracksContainer{
+        width: 20rem;
+        height: 20rem;
+      }
+
+      .tracksContainer{
+        padding: 1rem;
+
+        .trackList{
+          padding: 0;
+          margin: 1rem 0;
+        }
+      }
+    }
+  }
+}
