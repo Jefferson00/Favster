@@ -94,11 +94,13 @@ export function Albums({ albumList, listType, loading, onItemSelected }: AlbumsP
         <Loading />
       }
 
-      {listType === 'similar' ?
-        <h2>Álbuns Similares</h2>
-        :
-        <h2>Álbuns</h2>
-      }
+      {listType !== 'library' && (
+        listType === 'similar' ?
+          <h2>Álbuns Similares</h2>
+          :
+          <h2>Álbuns</h2>
+      )}
+
       <div className={styles.albumsList}>
         {albums.map((album, index) => {
           return (

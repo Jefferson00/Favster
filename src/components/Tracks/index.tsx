@@ -90,7 +90,10 @@ export function Tracks({ artistTracks, listType }: TracksProps) {
       ref={ref}
       className={styles.tracksContainer}
     >
-      <h2>Músicas</h2>
+      {listType !== 'library' &&
+        <h2>Músicas</h2>
+      }
+
       <div className={styles.tracksList}>
         {tracks.map((track, index) => {
           return (

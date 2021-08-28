@@ -93,11 +93,13 @@ export function Artists({ artistsList, listType, loading, onItemSelected }: Arti
         <Loading />
       }
 
-      {listType === 'similar' ?
-        <h2>Álbuns Similares</h2>
-        :
-        <h2>Artistas</h2>
-      }
+      {listType !== 'library' && (
+        listType === 'similar' ?
+          <h2>Artistas Similares</h2>
+          :
+          <h2>Artistas</h2>
+      )}
+
       <div className={styles.artistsList}>
         {artists.map((artist, index) => {
           return (
