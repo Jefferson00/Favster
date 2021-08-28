@@ -131,8 +131,11 @@ export function Player() {
                             blurDataURL={track.image}
                         />
                     </motion.div>
-                    <strong>{track.title}</strong>
-                    <span>{track.artistName}</span>
+
+                    <div className={styles.infoTrack}>
+                        <strong>{track.title}</strong>
+                        <span>{track.artistName}</span>
+                    </div>
                 </div>
             ) : (
                 <div className={styles.emptyPlayer}>
