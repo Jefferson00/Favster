@@ -35,3 +35,26 @@
     }
 }
 
+
+@media(max-width: 720px){
+    .headerContainer{
+        height: 3.125rem;
+        padding: 2rem;
+        text-align: center;
+
+        a{
+            img{
+                height: 2.4rem;
+            }
+        }
+
+        p{
+            display: none;
+        }
+
+        button{
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+    }
+}
