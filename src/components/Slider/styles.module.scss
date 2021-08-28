@@ -110,3 +110,20 @@
       }
     }
   }
+
+  @media(max-width: 720px){
+    .sliderContainer{
+      .list{
+        gap: 1rem;
+
+        .listItem{
+          width: 6.625rem;
+
+          img{
+            width: 6.625rem;
+            height: 6.625rem;
+          }
+        }
+      }
+    }
+  }
