@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Albums } from '../../components/Albums';
 import { Artists } from '../../components/Artists';
 import { Header } from '../../components/Header';
+import { Loading } from '../../components/Loading';
 import { Player } from '../../components/Player';
 import { Tracks } from '../../components/Tracks';
 import { useAuth } from '../../contexts/AuthContext';
@@ -46,6 +47,10 @@ export default function Library() {
   const [tracks, setTracks] = useState<Track[]>([]);
   const [typeSelected, setTypeSelected] = useState<'artist' | 'album' | 'track'>('artist');
 
+  const [artistsLoaded, setArtistsLoaded] = useState(false);
+  const [albumsLoaded, setAlbumsLoaded] = useState(false);
+  const [tracksLoaded, setTracksLoaded] = useState(false);
+
   const [loading, setLoading] = useState(false);
 
   function onItemSelected() {
@@ -56,6 +61,7 @@ export default function Library() {
 
   const handleSelectAlbum = useCallback(async () => {
     setTypeSelected('album');
+    setAlbumsLoaded(false);
 
     if (user) {
       const albumsRef = database.ref(`libs/${user?.id}/albums`).orderByChild('rating')
@@ -75,11 +81,13 @@ export default function Library() {
       parsedAlbum.reverse();
 
       setAlbums(parsedAlbum);
+      setAlbumsLoaded(true);
     }
   }, [user]);
 
   const handleSelectTracks = useCallback(async () => {
     setTypeSelected('track');
+    setTracksLoaded(false);
 
     if (user) {
       const tracksRef = database.ref(`libs/${user?.id}/tracks`).orderByChild('artistName');
@@ -103,11 +111,13 @@ export default function Library() {
         //parsedTracks.reverse();
 
         setTracks(parsedTracks);
+        setTracksLoaded(true);
       });
     }
   }, [user])
 
   const handleSelectArtist = useCallback(async () => {
+    setArtistsLoaded(false);
     if (user) {
       const artistsRef = database.ref(`libs/${user?.id}/artists`).orderByChild('rating');
       let parsedArtist: Artist[] = [];
@@ -126,6 +136,7 @@ export default function Library() {
         parsedArtist.reverse();
 
         setArtists(parsedArtist);
+        setArtistsLoaded(true);
       });
     }
   }, [user]);
@@ -186,54 +197,63 @@ export default function Library() {
 
             <main>
               {typeSelected === 'artist' && (
-                artists.length > 0 ?
-                  <Artists
-                    artistsList={artists}
-                    listType="library"
-                    onItemSelected={onItemSelected}
-                    loading={loading}
-                  />
+                artistsLoaded ? (
+                  artists.length > 0 ?
+                    <Artists
+                      artistsList={artists}
+                      listType="library"
+                      onItemSelected={onItemSelected}
+                      loading={loading}
+                    />
+                    :
+                    <div className={styles.emptySpace}>
+                      <h3>
+                        Você não possue nenhum
+                        artista favorito ainda.
+                      </h3>
+                      <img src="/empty-library.svg" alt="sem resultados" />
+                    </div>
+                )
                   :
-                  <div className={styles.emptySpace}>
-                    <h3>
-                      Você não possue nenhum
-                      artista favorito ainda.
-                    </h3>
-                    <img src="/empty-library.svg" alt="sem resultados" />
-                  </div>
-              )
-              }
+                  <Loading />
+              )}
+
               {typeSelected === 'album' && (
-                albums.length > 0 ?
-                  <Albums
-                    albumList={albums}
-                    loading={loading}
-                    onItemSelected={onItemSelected}
-                    listType="library"
-                  />
-                  :
-                  <div className={styles.emptySpace}>
-                    <h3>
-                      Você não possue nenhum
-                      álbum favorito ainda.
-                    </h3>
-                    <img src="/empty-library.svg" alt="sem resultados" />
-                  </div>
-              )
-              }
+                albumsLoaded ? (
+                  albums.length > 0 ?
+                    <Albums
+                      albumList={albums}
+                      loading={loading}
+                      onItemSelected={onItemSelected}
+                      listType="library"
+                    />
+                    :
+                    <div className={styles.emptySpace}>
+                      <h3>
+                        Você não possue nenhum
+                        álbum favorito ainda.
+                      </h3>
+                      <img src="/empty-library.svg" alt="sem resultados" />
+                    </div>
+                ) :
+                  <Loading />
+              )}
+
               {typeSelected === 'track' && (
-                tracks.length > 0 ?
-                  <Tracks artistTracks={tracks} listType="library" />
-                  :
-                  <div className={styles.emptySpace}>
-                    <h3>
-                      Você não possue nenhuma
-                      música favorita ainda.
-                    </h3>
-                    <img src="/empty-library.svg" alt="sem resultados" />
-                  </div>
-              )
-              }
+                tracksLoaded ? (
+                  tracks.length > 0 ?
+                    <Tracks artistTracks={tracks} listType="library" />
+                    :
+                    <div className={styles.emptySpace}>
+                      <h3>
+                        Você não possue nenhuma
+                        música favorita ainda.
+                      </h3>
+                      <img src="/empty-library.svg" alt="sem resultados" />
+                    </div>
+                ) :
+                  <Loading />
+              )}
             </main>
           </section>
         </div>
