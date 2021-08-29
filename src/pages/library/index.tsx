@@ -18,25 +18,6 @@ type Artist = {
   rating: number;
 }
 
-type FirebaseArtist = Record<string, {
-  id: string;
-  name: string;
-  type: string;
-  image: string;
-  bio: string;
-  rating: number;
-  userId: string;
-}>
-
-type FirebaseAlbum = Record<string, {
-  id: string;
-  name: string;
-  artistName: string;
-  image: string;
-  rating: number;
-  userId: string;
-}>
-
 type Album = {
   id: string;
   name: string;
@@ -44,17 +25,6 @@ type Album = {
   image: string;
   rating: number;
 }
-
-type FirebaseTrack = Record<string, {
-  id: string;
-  name: string;
-  artistName: string;
-  albumName: string;
-  image: string;
-  previewUrl: string;
-  rating: number;
-  userId: string;
-}>
 
 type Track = {
   id: string;
