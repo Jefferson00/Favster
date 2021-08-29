@@ -60,7 +60,7 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
             setNextItem(nextItem + 1);
             setPrevItem(1);
 
-            itemRef.current[nextItem + 1].scrollIntoView({ behavior: 'smooth' });
+            itemRef.current[nextItem + 1].scrollIntoView({ block: "start", behavior: 'smooth', inline: 'start' });
         }
     }
 
@@ -73,6 +73,12 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
         }
     }
 
+    /**
+     * return item element based on data type
+     * @param item DataProps
+     * @param index number
+     * @returns JSX item element
+     */
     function setItemList(item: DataProps, index: number) {
         let imageSource = 'default-artist.svg';
         let routeName = '';
@@ -88,7 +94,6 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
         if (item.type === 'album') {
             routeName = 'albums';
         }
-
 
         if (item.type === "track") {
             return (
@@ -190,10 +195,9 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
                 <motion.a
                     initial={{ x: '-50%', y: '-50%' }}
                     whileHover={{ x: '-60%' }}
-                    //href={`#${prevItem}-${data[0].type}`}
                     className={styles.arrowButton}
                     onClick={handlePrevItem}>
-                    ‹ {/*Change for SVG Icon*/}
+                    ‹
                 </motion.a>
             }
 
@@ -212,6 +216,7 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
                                 id={index.toString() + "-" + item.type}
                                 ref={(ref) => !itemRef.current.includes(ref) && itemRef.current.push(ref)}
                             >
+
                                 {/*function that return a JSX element based on type of the item*/}
                                 {setItemList(item, index)}
 
@@ -229,7 +234,6 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
                 <motion.a
                     initial={{ x: '50%', y: '-50%' }}
                     whileHover={{ x: '60%' }}
-                    //href={`#${nextItem}-${data[0].type}`}
                     className={styles.arrowButton}
                     onClick={handleNextItem}>
                     ›
