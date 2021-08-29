@@ -182,7 +182,7 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
           url: track.previewURL,
           albumName: track.albumName,
           artistName: track.artistName,
-          duration: track.playbackSeconds,
+          duration: 30, //All preview tracks have 30s
           isFavorite: false,
         });
       });

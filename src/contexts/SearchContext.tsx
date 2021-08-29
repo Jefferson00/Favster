@@ -45,6 +45,10 @@ export function SearchContextProvider({ children }: SearchContextProviderProps) 
     setSearchContent(value);
   }
 
+  /**
+   * search in all types
+   * @param searchContent string
+   */
   async function searchAll(searchContent: string) {
     if (API_KEY && searchContent && searchContent.trim().length > 0) {
       try {
@@ -70,6 +74,11 @@ export function SearchContextProvider({ children }: SearchContextProviderProps) 
     }
   }
 
+  /**
+   * return albums based in response search
+   * @param res: AxiosResponse
+   * @returns albums: Array
+   */
   async function searchAlbum(res: AxiosResponse<any>) {
     const albumsArray: [] = res.data.search.data.albums;
 
@@ -100,6 +109,11 @@ export function SearchContextProvider({ children }: SearchContextProviderProps) 
     return albumsReturned;
   }
 
+  /**
+   * return artists based in response search
+   * @param res: AxiosResponse 
+   * @returns artists: Array
+   */
   async function searchArtists(res: AxiosResponse<any>) {
     const artistsArray: [] = res.data.search.data.artists;
     let artistsReturned: Data[] = [];
@@ -133,6 +147,11 @@ export function SearchContextProvider({ children }: SearchContextProviderProps) 
     return artistsReturned;
   }
 
+  /**
+   * return tracks based in response search
+   * @param res: AxiosResponse
+   * @returns tracks: Array
+   */
   async function searchTracks(res: AxiosResponse<any>) {
     const tracksArray: [] = res.data.search.data.tracks;
     let tracksReturned: Data[] = [];
@@ -156,7 +175,7 @@ export function SearchContextProvider({ children }: SearchContextProviderProps) 
           previewURL: track.previewURL,
           albumName: track.albumName,
           artistName: track.artistName,
-          duration: track.playbackSeconds,
+          duration: 30, //All preview tracks have 30s
         });
 
       });
