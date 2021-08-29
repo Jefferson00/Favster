@@ -100,6 +100,8 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
         .filter(artistAlbum => artistAlbum.id !== album.id);
       setArtistAlbums(artistAlbumsWithoutSelectedALbum);
     }
+
+    setLoading(false);
   }
 
   /**
@@ -378,8 +380,6 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
   useEffect(() => {
     const source = axios.CancelToken.source();
 
-    setLoading(false);
-
     setAlbumRemainingData();
     verifyFavAlbum();
 
@@ -459,11 +459,11 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
                     }}
                     onClick={toggleFavAlbum}
                   >
-                    {isFavorite ?
+                    {!loadingTracks && (isFavorite ?
                       <img src="/star-selected.svg" alt="favoritar" />
                       :
                       <img src="/star.svg" alt="favoritar" />
-                    }
+                    )}
                   </motion.button>
                 </div>
               </div>
@@ -523,6 +523,7 @@ export default function Album({ album, slug, artistId }: AlbumProps) {
                 whileHover={{ x: '60%' }}
                 className={styles.sideButton}
                 type="button"
+                onClick={() => playList(tracks, 0)}
               >
                 <img src="/play.svg" alt="Tocar episódio" />
               </motion.button>
