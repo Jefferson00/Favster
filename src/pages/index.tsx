@@ -15,9 +15,6 @@ import Link from 'next/link';
 import Lottie from 'react-lottie';
 import animationData from '../assets/animations/loading.json';
 import { HomeAnimation } from '../assets/animations/Home';
-import { useTheme } from 'next-themes';
-
-//TODO responsividade, PWA, dark theme
 
 export default function Home() {
   const {
@@ -28,8 +25,6 @@ export default function Home() {
     searchLoading,
     searchContent,
   } = useSearch();
-
-  const { theme, setTheme } = useTheme();
 
   return (
     <div className={styles.wrapper}>
