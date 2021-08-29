@@ -259,6 +259,11 @@
       grid-template-rows: 1fr 1fr;
       width: 27rem;
       margin: 1rem auto;
+
+      .imageContainer{
+        border-top-right-radius: 10px;
+        overflow: hidden;
+      }
     }
   }
 }
