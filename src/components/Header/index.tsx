@@ -40,9 +40,9 @@ export function Header() {
             <div>
                 <button onClick={changeTheme} className={styles.themeButton}>
                     {userTheme && (userTheme === 'dark' ?
-                        <img src="icons/light.svg" alt="tema light" />
+                        <img src="/icons/light.svg" alt="tema light" />
                         :
-                        <img src="icons/dark.svg" alt="tema dark" />)
+                        <img src="/icons/dark.svg" alt="tema dark" />)
                     }
                 </button>
 
