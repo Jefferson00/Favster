@@ -53,7 +53,6 @@ export function SearchContextProvider({ children }: SearchContextProviderProps) 
     if (API_KEY && searchContent && searchContent.trim().length > 0) {
       try {
         const result = await api.get(`search?apikey=${API_KEY}&query=${searchContent}&per_type_limit=10`);
-        setSearchLoading(false);
         const artistsReturned = await searchArtists(result);
         setArtists(artistsReturned);
 
@@ -62,6 +61,7 @@ export function SearchContextProvider({ children }: SearchContextProviderProps) 
 
         const tracksReturned = await searchTracks(result);
         setTracks(tracksReturned);
+        setSearchLoading(false);
       } catch (error) {
         setSearchLoading(false);
         alert('Não foi possível retornar o resultado da pesquisa, tente novamente.')
