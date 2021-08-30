@@ -38,6 +38,16 @@ export function Header() {
             </div>
 
             <div>
+                <Link href="/library">
+                    <button className={styles.libButton}>
+                        {userTheme && (userTheme === 'dark' ?
+                            <img src="/icons/lib-icon-dark.svg" alt="biblioteca" />
+                            :
+                            <img src="/icons/lib-icon.svg" alt="biblioteca" />
+                        )}
+                    </button>
+                </Link>
+
                 <button onClick={changeTheme} className={styles.themeButton}>
                     {userTheme && (userTheme === 'dark' ?
                         <img src="/icons/light.svg" alt="tema light" />
