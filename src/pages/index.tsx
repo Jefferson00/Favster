@@ -67,10 +67,11 @@ export default function Home() {
                       loop: true,
                       rendererSettings: {
                         preserveAspectRatio: "xMidYMid slice"
-                      }
+                      },
                     }}
                     height={400}
                     width={400}
+                    isClickToPauseDisabled
                   />
                 </div>
                 :
