@@ -46,8 +46,8 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
     const listRef = useRef<HTMLDivElement>(null);
     const itemRef = useRef<HTMLDivElement[]>([]);
 
-    const [nextItem, setNextItem] = useState(0);
-    const [prevItem, setPrevItem] = useState(0);
+    const [dataList, setDataList] = useState<DataProps[]>(data);
+
     const [maxItemOnScreen, setMaxItemOnScreen] = useState(0);
     const [isItemClicked, setIsItemClicked] = useState(false);
 
@@ -56,21 +56,34 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
     const [trackList, setTrackList] = useState<Track[]>([]);
 
     function handleNextItem() {
-        if ((nextItem + 1) < data.length) {
-            setNextItem(nextItem + 1);
-            setPrevItem(1);
-
-            itemRef.current[nextItem + 1].scrollIntoView({ block: "start", behavior: 'smooth', inline: 'start' });
-        }
+        let itens: DataProps[] = [];
+        dataList.map(dt => {
+            itens.push(dt);
+        });
+        itens.push(itens.shift());
+        setDataList(itens);
+        handleTransitionAnimation();
     }
 
     function handlePrevItem() {
-        if ((prevItem - 1) >= 0) {
-            setPrevItem(prevItem - 1);
-            setNextItem(maxItemOnScreen);
+        let itens: DataProps[] = [];
+        dataList.map(dt => {
+            itens.push(dt);
+        });
+        itens.unshift(itens.pop());
+        setDataList(itens);
+        handleTransitionAnimation();
+    }
 
-            itemRef.current[prevItem - 1].scrollIntoView({ behavior: 'smooth' });
-        }
+    function handleTransitionAnimation() {
+        itemRef.current.forEach(item => {
+            if (item) {
+                item.classList.add(styles.fade);
+                setTimeout(() => {
+                    item.classList.remove(styles.fade);
+                }, 500);
+            }
+        });
     }
 
     /**
@@ -140,13 +153,11 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
 
     useEffect(() => {
         if (listRef.current && itemRef.current[0]) {
-            setPrevItem(0);
             let maxItensOnScreen = Math.floor(listRef.current.offsetWidth / itemRef.current[0].offsetWidth);
 
             setMaxItemOnScreen(maxItensOnScreen);
 
             if ((data.length - 1) > maxItensOnScreen) {
-                setNextItem(maxItensOnScreen);
                 setIsResultsSmallerThanList(false);
             }
         }
@@ -205,10 +216,10 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
                 className={styles.list}
                 ref={listRef}
             >
-                {data.map((item, index) => {
+                {dataList.map((item, index) => {
                     return (
                         <motion.div
-                            key={item.id}
+                            key={index}
                             variants={fadeInUp}
                         >
                             <div
