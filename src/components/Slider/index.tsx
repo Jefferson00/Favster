@@ -161,10 +161,15 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
                 setIsResultsSmallerThanList(false);
             }
         }
+    }, [data, loadingIndicator]);
 
-        if (data[0].type === "track") {
+    /**
+     * Update tracklist when the datalist of type 'track' is updated
+     */
+    useEffect(() => {
+        if (dataList[0].type === "track") {
             let trackArray: Track[] = [];
-            data.map((item, index) => {
+            dataList.map((item, index) => {
                 trackArray[index] = {
                     albumName: item.albumName,
                     artistName: item.artistName,
@@ -178,8 +183,7 @@ export function Slider({ data, loadingIndicator }: SliderProps) {
 
             setTrackList(trackArray);
         }
-
-    }, [data, loadingIndicator]);
+    }, [dataList]);
 
     useEffect(() => {
         if (inView) {
