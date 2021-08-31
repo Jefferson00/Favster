@@ -1,18 +1,18 @@
 <h3 align="center">
-  <img alt="Favster" title="Favster" src=".github/logo.svg" height="100px" width="100px"/>
+  <img alt="Favster" title="Favster" src=".github/logo.svg" height="300px" width="300px"/>
 </h3>
-
-<h2 align="center">
- Favster
-</h2>
 
 <h3 align="center">
   Player de músicas, integrado com a API da Napster, onde é possível procurar por artistas, álbuns e músicas, ouvir um preview e salvá-los como favoritos na sua biblioteca. 
 </h3>
 
 <p align="center">
-  <img alt="Version" src="https://img.shields.io/badge/version-1.0-brightgreen">
-  <img alt="Repository size" src="https://img.shields.io/github/repo-size/Jefferson00/lovepetswebbeta">
+  <img alt="GitHub language count" src="https://img.shields.io/github/languages/count/Jefferson00/Favster?color=orange">
+  <img alt="Version" src="https://img.shields.io/badge/version-1.0-orange">
+  <img alt="Repository size" src="https://img.shields.io/github/repo-size/Jefferson00/Favster?color=orange">
+  <a href="https://github.com/Jefferson00/Favster/commits/master">
+      <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/Jefferson00/Favster?color=orange">
+  </a>
   <a href="https://www.linkedin.com/in/jefferson-c-silva-aa1b7b1a9/">
     <img alt="Made by Jefferson" src="https://img.shields.io/badge/made%20by-Jefferson-blue">
   </a>
@@ -22,7 +22,7 @@
   <img src=".github/preview.png">
 </p>
 
-## 💻 Projeto
+## 💻 Projeto (🚧 Em desenvolvimento 🚧)
 
 <strong>Favster</strong> é um player de músicas acessado via web, integrado com a [API da Napster](https://developer.napster.com/api/v2.2), onde é possível procurar por artistas, álbuns e músicas, ouvir um preview e salvá-los como favoritos em uma biblioteca. 
 
