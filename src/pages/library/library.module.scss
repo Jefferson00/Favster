@@ -70,25 +70,18 @@
 
 
 @media(max-width: 720px){
-  .wrapper{
-    main{
-        width: auto;
-    }
+  .container{
+    margin-bottom: 8rem;
+    .content{
+      padding: 1.563rem 2rem;
 
-    .container{
-      margin-bottom: 8rem;
-      .content{
-        padding: 1.563rem 2rem;
-
-        main{
-          .emptySpace{
-            img{
-              height: 10rem;
-            }
+      main{
+        .emptySpace{
+          img{
+            height: 10rem;
           }
         }
       }
     }
   }
-  
 }

@@ -1,10 +1,10 @@
+import { GetServerSideProps } from 'next';
 import Head from 'next/head';
+import { parseCookies } from 'nookies';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Albums } from '../../components/Albums';
 import { Artists } from '../../components/Artists';
-import { Header } from '../../components/Header';
 import { Loading } from '../../components/Loading';
-import { Player } from '../../components/Player';
 import { Tracks } from '../../components/Tracks';
 import { useAuth } from '../../contexts/AuthContext';
 import { database } from '../../services/firebase';
@@ -150,115 +150,125 @@ export default function Library() {
   }, [user?.id]);
 
   return (
-    <div className={styles.wrapper}>
-      <main>
-        <Header />
+    <div className={styles.container} ref={containerRef}>
+      <Head>
+        <title>Biblioteca | Favster</title>
+      </Head>
 
-        <div className={styles.container} ref={containerRef}>
-          <Head>
-            <title>Biblioteca | Favster</title>
-          </Head>
+      <section className={styles.content}>
+        <header>
+          <button
+            style={{
+              color:
+                typeSelected === 'artist' ? '#FF6400' : '#808080'
+            }}
+            onClick={() => {
+              setTypeSelected('artist');
+              handleSelectArtist();
+            }}
+          >
+            Artistas
+          </button>
 
-          <section className={styles.content}>
-            <header>
-              <button
-                style={{
-                  color:
-                    typeSelected === 'artist' ? '#FF6400' : '#808080'
-                }}
-                onClick={() => {
-                  setTypeSelected('artist');
-                  handleSelectArtist();
-                }}
-              >
-                Artistas
-              </button>
+          <button
+            style={{
+              color:
+                typeSelected === 'album' ? '#FF6400' : '#808080'
+            }}
+            onClick={handleSelectAlbum}
+          >
+            Álbuns
+          </button>
 
-              <button
-                style={{
-                  color:
-                    typeSelected === 'album' ? '#FF6400' : '#808080'
-                }}
-                onClick={handleSelectAlbum}
-              >
-                Álbuns
-              </button>
+          <button
+            style={{
+              color:
+                typeSelected === 'track' ? '#FF6400' : '#808080'
+            }}
+            onClick={handleSelectTracks}
+          >
+            Músicas
+          </button>
+        </header>
 
-              <button
-                style={{
-                  color:
-                    typeSelected === 'track' ? '#FF6400' : '#808080'
-                }}
-                onClick={handleSelectTracks}
-              >
-                Músicas
-              </button>
-            </header>
+        <main>
+          {typeSelected === 'artist' && (
+            artistsLoaded ? (
+              artists.length > 0 ?
+                <Artists
+                  artistsList={artists}
+                  listType="library"
+                  onItemSelected={onItemSelected}
+                  loading={loading}
+                />
+                :
+                <div className={styles.emptySpace}>
+                  <h3>
+                    Você não possue nenhum
+                    artista favorito ainda.
+                  </h3>
+                  <img src="/empty-library.svg" alt="sem resultados" />
+                </div>
+            )
+              :
+              <Loading />
+          )}
 
-            <main>
-              {typeSelected === 'artist' && (
-                artistsLoaded ? (
-                  artists.length > 0 ?
-                    <Artists
-                      artistsList={artists}
-                      listType="library"
-                      onItemSelected={onItemSelected}
-                      loading={loading}
-                    />
-                    :
-                    <div className={styles.emptySpace}>
-                      <h3>
-                        Você não possue nenhum
-                        artista favorito ainda.
-                      </h3>
-                      <img src="/empty-library.svg" alt="sem resultados" />
-                    </div>
-                )
-                  :
-                  <Loading />
-              )}
+          {typeSelected === 'album' && (
+            albumsLoaded ? (
+              albums.length > 0 ?
+                <Albums
+                  albumList={albums}
+                  loading={loading}
+                  onItemSelected={onItemSelected}
+                  listType="library"
+                />
+                :
+                <div className={styles.emptySpace}>
+                  <h3>
+                    Você não possue nenhum
+                    álbum favorito ainda.
+                  </h3>
+                  <img src="/empty-library.svg" alt="sem resultados" />
+                </div>
+            ) :
+              <Loading />
+          )}
 
-              {typeSelected === 'album' && (
-                albumsLoaded ? (
-                  albums.length > 0 ?
-                    <Albums
-                      albumList={albums}
-                      loading={loading}
-                      onItemSelected={onItemSelected}
-                      listType="library"
-                    />
-                    :
-                    <div className={styles.emptySpace}>
-                      <h3>
-                        Você não possue nenhum
-                        álbum favorito ainda.
-                      </h3>
-                      <img src="/empty-library.svg" alt="sem resultados" />
-                    </div>
-                ) :
-                  <Loading />
-              )}
-
-              {typeSelected === 'track' && (
-                tracksLoaded ? (
-                  tracks.length > 0 ?
-                    <Tracks artistTracks={tracks} listType="library" />
-                    :
-                    <div className={styles.emptySpace}>
-                      <h3>
-                        Você não possue nenhuma
-                        música favorita ainda.
-                      </h3>
-                      <img src="/empty-library.svg" alt="sem resultados" />
-                    </div>
-                ) :
-                  <Loading />
-              )}
-            </main>
-          </section>
-        </div>
-      </main>
-      <Player />
+          {typeSelected === 'track' && (
+            tracksLoaded ? (
+              tracks.length > 0 ?
+                <Tracks artistTracks={tracks} listType="library" />
+                :
+                <div className={styles.emptySpace}>
+                  <h3>
+                    Você não possue nenhuma
+                    música favorita ainda.
+                  </h3>
+                  <img src="/empty-library.svg" alt="sem resultados" />
+                </div>
+            ) :
+              <Loading />
+          )}
+        </main>
+      </section>
     </div>
   )
+}
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const { ['@Musifavs:token']: token } = parseCookies(context);
+
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      }
+    }
+  }
+
+  return {
+    props: {}
+  }
 }

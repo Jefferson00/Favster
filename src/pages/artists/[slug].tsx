@@ -277,145 +277,139 @@ export default function Artists({ artist, slug, data }: ArtistProps) {
     }, [user]);
 
     return (
-        <div className={styles.wrapper}>
-            <main>
-                <Header />
-                <div className={styles.container} ref={containerRef}>
-                    <Head>
-                        <title>{artist.name} | Favster</title>
-                    </Head>
+        <div className={styles.container} ref={containerRef}>
+            <Head>
+                <title>{artist.name} | Favster</title>
+            </Head>
 
-                    <motion.div
-                        className={styles.artistBackgroundImage}
-                        initial={{ y: 60, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{
-                            duration: 0.2,
-                            delay: 0.4
-                        }}
+            <motion.div
+                className={styles.artistBackgroundImage}
+                initial={{ y: 60, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{
+                    duration: 0.2,
+                    delay: 0.4
+                }}
+            >
+                {artist.image ?
+                    <img src={artist.image} alt={artist.name} />
+                    :
+                    <img src="/default-artist.svg" alt={artist.name} />
+                }
+            </motion.div>
+
+            <div className={styles.artist}>
+                <motion.div
+                    initial='initial'
+                    animate='animate'
+                    transition={{ delay: 0.5 }}
+                    variants={fadeInUp}
+                    className={styles.thumbnailContainer}
+                >
+
+                    <motion.button
+                        type="button"
+                        initial={{ x: '-50%', y: '-50%' }}
+                        whileHover={{ x: '-60%' }}
+                        className={styles.sideButton}
+                        onClick={() => router.back()}
                     >
-                        {artist.image ?
-                            <img src={artist.image} alt={artist.name} />
-                            :
-                            <img src="/default-artist.svg" alt={artist.name} />
+                        <img
+                            src="/arrow-left.svg"
+                            alt="Voltar"
+                        />
+                    </motion.button>
+
+                    {artist.image ?
+                        <Image
+                            width={700}
+                            height={258}
+                            src={artist.image}
+                            objectFit="cover"
+                            placeholder="blur"
+                            blurDataURL={artist.image}
+                        />
+                        :
+                        <Image
+                            width={700}
+                            height={258}
+                            src="/default-artist.svg"
+                            objectFit="cover"
+                        />
+                    }
+                    {user &&
+                        <div className={styles.favstarContainer}>
+                            <motion.button
+                                type="button"
+                                whileTap={{
+                                    rotate: 90,
+                                    scale: 1.5,
+                                }}
+                                onClick={toggleFavArtist}
+                            >
+                                {isFavorite ?
+                                    <img src="/star-selected.svg" alt="favoritar" />
+                                    :
+                                    <img src="/star.svg" alt="favoritar" />
+                                }
+                            </motion.button>
+                        </div>
+                    }
+                    <motion.button
+                        initial={{ x: '50%', y: '-50%' }}
+                        whileHover={{ x: '60%' }}
+                        type="button"
+                        className={styles.sideButton}
+                        onClick={() => playList(artistTracks, 0)}
+                    >
+                        <img src="/play.svg" alt="Tocar episódio" />
+                    </motion.button>
+                </motion.div>
+                {(user && isFavorite) &&
+                    <Rating
+                        value={ratingValue}
+                        onChange={(value) => handleChangeRating(value)}
+                    />
+                }
+
+                <header>
+                    <motion.div
+                        variants={stagger}
+                        initial='initial'
+                        animate={'animate'}
+                        transition={{ delay: 0.6, duration: 0.8 }}
+                    >
+                        <motion.h1 variants={fadeInUp}>
+                            {artist.name}
+                        </motion.h1>
+                        {
+                            genres.map(genre => {
+                                return (
+                                    <motion.span
+                                        key={genre.id}
+                                        variants={fadeInUp}
+                                    >
+                                        {genre.name}
+                                    </motion.span>
+                                )
+                            })
                         }
                     </motion.div>
+                </header>
 
-                    <div className={styles.artist}>
-                        <motion.div
-                            initial='initial'
-                            animate='animate'
-                            transition={{ delay: 0.5 }}
-                            variants={fadeInUp}
-                            className={styles.thumbnailContainer}
-                        >
+                <div
+                    className={styles.description}
+                    dangerouslySetInnerHTML={{ __html: artist.bio }}
+                />
 
-                            <motion.button
-                                type="button"
-                                initial={{ x: '-50%', y: '-50%' }}
-                                whileHover={{ x: '-60%' }}
-                                className={styles.sideButton}
-                                onClick={() => router.back()}
-                            >
-                                <img
-                                    src="/arrow-left.svg"
-                                    alt="Voltar"
-                                />
-                            </motion.button>
+                <Albums
+                    albumList={artistAlbums}
+                    loading={loading}
+                    onItemSelected={onAlbumItemSelected}
+                />
 
-                            {artist.image ?
-                                <Image
-                                    width={700}
-                                    height={258}
-                                    src={artist.image}
-                                    objectFit="cover"
-                                    placeholder="blur"
-                                    blurDataURL={artist.image}
-                                />
-                                :
-                                <Image
-                                    width={700}
-                                    height={258}
-                                    src="/default-artist.svg"
-                                    objectFit="cover"
-                                />
-                            }
-                            {user &&
-                                <div className={styles.favstarContainer}>
-                                    <motion.button
-                                        type="button"
-                                        whileTap={{
-                                            rotate: 90,
-                                            scale: 1.5,
-                                        }}
-                                        onClick={toggleFavArtist}
-                                    >
-                                        {isFavorite ?
-                                            <img src="/star-selected.svg" alt="favoritar" />
-                                            :
-                                            <img src="/star.svg" alt="favoritar" />
-                                        }
-                                    </motion.button>
-                                </div>
-                            }
-                            <motion.button
-                                initial={{ x: '50%', y: '-50%' }}
-                                whileHover={{ x: '60%' }}
-                                type="button"
-                                className={styles.sideButton}
-                                onClick={() => playList(artistTracks, 0)}
-                            >
-                                <img src="/play.svg" alt="Tocar episódio" />
-                            </motion.button>
-                        </motion.div>
-                        {(user && isFavorite) &&
-                            <Rating
-                                value={ratingValue}
-                                onChange={(value) => handleChangeRating(value)}
-                            />
-                        }
-
-                        <header>
-                            <motion.div
-                                variants={stagger}
-                                initial='initial'
-                                animate={'animate'}
-                                transition={{ delay: 0.6, duration: 0.8 }}
-                            >
-                                <motion.h1 variants={fadeInUp}>
-                                    {artist.name}
-                                </motion.h1>
-                                {
-                                    genres.map(genre => {
-                                        return (
-                                            <motion.span
-                                                key={genre.id}
-                                                variants={fadeInUp}
-                                            >
-                                                {genre.name}
-                                            </motion.span>
-                                        )
-                                    })
-                                }
-                            </motion.div>
-                        </header>
-
-                        <div
-                            className={styles.description}
-                            dangerouslySetInnerHTML={{ __html: artist.bio }}
-                        />
-
-                        <Albums
-                            albumList={artistAlbums}
-                            loading={loading}
-                            onItemSelected={onAlbumItemSelected}
-                        />
-
-                        <Tracks artistTracks={artistTracks} />
-                    </div>
-                </div>
-            </main>
-            <Player />
+                <Tracks artistTracks={artistTracks} />
+            </div>
         </div>
     )
 }

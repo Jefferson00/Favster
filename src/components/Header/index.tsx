@@ -19,10 +19,16 @@ export function Header() {
 
     useEffect(() => {
         setUserTheme(theme);
-    }, [theme])
+    }, [theme]);
+
+    if (!user) {
+        return null
+    }
 
     return (
-        <header className={styles.headerContainer}>
+        <header
+            className={styles.headerContainer}
+        >
             <div>
                 <Link href="/">
                     <a>

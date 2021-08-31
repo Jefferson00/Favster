@@ -68,13 +68,14 @@ export function AuthProvider(props: AuthProviderProps) {
         throw new Error('Missing information from Google Account.');
       }
 
+      router.push('/');
+
       setUser({
         id: uid,
         name: displayName,
         avatar: photoURL,
       });
 
-      router.push('/');
     }
   }
 
@@ -85,6 +86,7 @@ export function AuthProvider(props: AuthProviderProps) {
       path: '/',
     });
 
+    setUser(null);
     router.push('/login');
 
     setTheme('light');

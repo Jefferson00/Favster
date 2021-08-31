@@ -1,15 +1,17 @@
-import { usePlayer } from '../../contexts/PlayerContext';
+import { useEffect, useRef, useState } from 'react';
 import Slider from 'rc-slider';
 import Image from 'next/image';
+import { usePlayer } from '../../contexts/PlayerContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 import 'rc-slider/assets/index.css';
 import styles from './styles.module.scss';
-import { useEffect, useRef, useState } from 'react';
 import { convertDurationToTimeString } from '../../utils/convertDurationToTimeString';
 
 import { motion, useAnimation } from 'framer-motion';
 
 export function Player() {
+    const { user } = useAuth();
     const audioRef = useRef<HTMLAudioElement>(null)
     const [progress, setProgress] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -101,8 +103,14 @@ export function Player() {
         }
     }
 
+    if (!user) {
+        return null
+    }
+
     return (
-        <div className={styles.playerContainer}>
+        <div
+            className={styles.playerContainer}
+        >
             {track &&
                 <div className={styles.playerBackgroundImg}>
                     <img
