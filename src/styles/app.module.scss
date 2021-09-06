@@ -7,3 +7,11 @@
       scroll-behavior: smooth;
   }
 }
+
+@media(max-width: 720px){
+  .wrapper{
+    main{
+        width: 100%;
+    }
+  }
+}
